@@ -1,0 +1,19 @@
+{
+  "name": "recipe-xchange",
+  "version": "1.0.0",
+  "description": "App for saving and searching recipes with nutritional information calculated and provided.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndreaGT91/Recipe-Xchange.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AndreaGT91/Recipe-Xchange/issues"
+  },
+  "homepage": "https://github.com/AndreaGT91/Recipe-Xchange#readme"
+}
