@@ -1,0 +1,132 @@
+<div class="row">
+  <form class="col s12">
+    <div class="row">
+      <br>
+      <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action">Search<i
+          class="material-icons left">search</i></button>
+      <br>
+      <br>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m6 l4">
+        <select>
+          <option value="" disabled selected>Category</option>
+          <option value="1">Sample Category 1</option>
+          <option value="2">Sample Category 2</option>
+          <option value="3">Sample Category 3</option>
+        </select>
+        <label>By Category</label>
+      </div>
+      <div class="input-field col s12 m6 l4">
+        <input placeholder="Ingredient" id="ingredient" type="text">
+        <label for="ingredient">By Ingredient</label>
+      </div>
+      <div class="input-field col s12 m6 l4">
+        <input placeholder="Keyword" id="keyword" type="text">
+        <label for="keyword">By Title Keyword</label>
+      </div>
+    </div> <!-- search fields row -->
+  </form> <!-- search form -->
+</div> <!-- search form row -->
+
+<div class="row">
+  <form class="col s12">
+    <div class="row">
+      <div class="col s2">
+        <a class="btn waves-effect waves-light teal darken-4"><i class="material-icons left">arrow_back_ios</i>Prev</a>
+      </div>
+      <div class="col s8">
+        <h5 class="center">{{ Recipe Title }}</h5>
+      </div>
+      <div class="col s2">
+        <a class="btn waves-effect waves-light teal darken-4 right"><i class="material-icons right">arrow_forward_ios</i>Next</a>
+      </div>
+    </div> <!-- title/navigation row -->
+    <div class="row">
+      <div class="input-field col s12">
+        <textarea disabled id="recipe-desc" class="materialize-textarea"></textarea>
+        <label for="recipe-desc">Description</label>
+      </div>
+    </div> <!-- description row -->
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input disabled id="submitted-by" type="text">
+        <label for="submitted-by">Submitted By</label>
+      </div>
+      <div class="input-field col s12 m6">
+        <input disabled id="source" type="text">
+        <label for="source">Source</label>
+      </div>
+    </div> <!-- author/source row -->
+    <div class="row">
+      <div class="input-field col s6 m3">
+        <input disabled id="prep-time" type="text">
+        <label for="prep-time">Prep Time</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input disabled id="cook-time" type="text">
+        <label for="cook-time">Cook Time</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input disabled id="oven-temp" type="text">
+        <label for="oven-temp">Oven Temp</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input disabled id="num-servings" type="text">
+        <label for="num-servings">Number of Servings</label>
+      </div>
+    </div> <!-- prep row -->
+    <div class="row">
+      <table class="striped responsive-table">
+        <thead>
+          <tr>
+            <th>Qty</th>
+            <th>Unit</th>
+            <th>Ingredient</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2</td>
+            <td>Cup</td>
+            <td>All-purpose flour</td>
+          </tr>
+          <tr>
+            <td>3/4</td>
+            <td>Cup</td>
+            <td>Sugar</td>
+          </tr>
+          <tr>
+            <td>1/2</td>
+            <td>Cup</td>
+            <td>Butter, softened</td>
+          </tr>
+        </tbody>
+      </table>
+    </div> <!-- ingredient table row -->
+    <div class="row">
+      <div class="input-field col s12">
+        <textarea disabled id="instructions" class="materialize-textarea"></textarea>
+        <label for="instructions">Instructions</label>
+      </div>
+    </div> <!-- instructions row -->
+    <div class="row">
+      <div class="input-field col s6 m3">
+        <input disabled id="calories" type="text">
+        <label for="calories">Calories Per Serving</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input disabled id="protein" type="text">
+        <label for="protein">Protein (g)</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input disabled id="carbohydrate" type="text">
+        <label for="carbohydrate">Carbohydrates (g)</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input disabled id="fat" type="text">
+        <label for="fat">Fat (g)</label>
+      </div>
+    </div> <!-- nutrition row -->
+  </form> <!-- recipe form -->
+</div> <!-- recipe form row -->

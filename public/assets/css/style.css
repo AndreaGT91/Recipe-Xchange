@@ -10,12 +10,12 @@ main {
   flex: 1 0 auto;
 }
 
-form {
+/* form {
   margin-top: 0px;
   margin-bottom: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
-}
+} */
 
 .switch label input[type=checkbox]:checked + .lever {
   background-color: lightgray;
