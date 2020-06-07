@@ -14,7 +14,7 @@ button {
   margin-top: 20px;
 }
 
-.deleteBtn {
+.editBtn, .deleteBtn {
   margin-top: 0px;
 }
 

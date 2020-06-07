@@ -13,6 +13,8 @@ CREATE TABLE users (
   password VARCHAR(128), -- will be hashed
   firstName VARCHAR(25),
   lastName VARCHAR(50),
+  location VARCHAR(50),
+  aboutMe TEXT,
   imperial BOOLEAN NOT NULL DEFAULT TRUE,
   PRIMARY KEY (id)
 );
