@@ -18,6 +18,12 @@ button {
   margin-top: 0px;
 }
 
+@media screen and (max-width: 400px) {
+  nav, .navbar-fixed {
+    height: 125px;
+  }
+}
+
 .switch label input[type=checkbox]:checked + .lever {
   background-color: lightgray;
 }
