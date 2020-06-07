@@ -1,0 +1,155 @@
+<div class="row"> <!-- Main recipe properties -->
+  <form action="#" class="col s12">
+    <div class="row">
+      <div class="col s2">
+        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action">Save<i
+            class="material-icons left">save_alt</i></button>
+      </div>
+      <div class="col s8">
+        <h5 class="center">Add/Update Recipe</h5>
+      </div>
+      <div class="col s2">
+        <button class="btn waves-effect waves-light teal darken-4 right" type="reset">Reset<i
+            class="material-icons left">clear</i></button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s12 m6">
+        <input id="title" type="text" required>
+        <label for="title">Title</label>
+      </div>
+      <div class="input-field col s12 m6">
+        <input id="source" type="text">
+        <label for="source">Source</label>
+      </div>
+    </div> <!-- title/source row -->
+    <div class="row">
+      <div class="input-field col s12">
+        <textarea id="recipe-desc" class="materialize-textarea"></textarea>
+        <label for="recipe-desc">Description</label>
+      </div>
+    </div> <!-- description row -->
+    <div class="row">
+      <div class="input-field col s6 m3">
+        <input id="prep-time" type="text">
+        <label for="prep-time">Prep Time</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input id="cook-time" type="text">
+        <label for="cook-time">Cook Time</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input id="oven-temp" type="text">
+        <label for="oven-temp">Oven Temp</label>
+      </div>
+      <div class="input-field col s6 m3">
+        <input id="num-servings" type="text" required>
+        <label for="num-servings">Number of Servings</label>
+      </div>
+    </div> <!-- prep row -->
+    <div class="row">
+      <div class="input-field col s12">
+        <textarea id="instructions" class="materialize-textarea"></textarea>
+        <label for="instructions">Instructions</label>
+      </div>
+    </div> <!-- instructions row -->
+  </form> <!-- recipe form -->
+</div> <!-- main recipe properties -->
+
+<form action="#" class="row"> <!-- Add/Update Ingredient Form -->
+    <div class="input-field col s6 m2">
+      <input id="quantity" type="number" class="validate" required>
+      <label for="quantity">Quantity</label>
+    </div>
+    <div class="input-field col s6 m2">
+      <select>
+        <option value="0" selected>N/A</option>
+        <option value="1">Oz</option>
+        <option value="2">Lb</option>
+        <option value="3">Tsp</option>
+        <option value="4">Tbs</option>
+        <option value="5">Cup</option>
+        <option value="6">Pt</option>
+        <option value="7">Qt</option>
+        <option value="8">Gal</option> -->
+    <!-- Metric options
+        <option value="1">mL</option>
+        <option value="2">L</option>
+        <option value="3">g</option>
+        <option value="4">kg</option> -->
+      </select>
+      <label>Unit</label>
+    </div>
+    <div class="input-field col s10 m7">
+      <input id="ingredient" type="text" class="validate" required>
+      <label for="ingredient">Ingredient</label>
+    </div>
+    <div class="col s2 m1">
+      <div class="row">
+        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action"><i
+          class="material-icons left">done</i><span class="hide-on-small-only">Save</span></button>
+        </button>
+      </div>
+    </div>
+</form> <!-- Add/Update ingredient form -->
+
+<div class="row"> <!-- Ingredient table -->
+  <table class="striped responsive-table">
+    <thead>
+      <tr>
+        <th>Qty</th>
+        <th>Unit</th>
+        <th>Ingredient</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2</td>
+        <td>Cup</td>
+        <td>All-purpose flour</td>
+        <td>
+          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
+        </td>
+      </tr>
+      <tr>
+        <td>3/4</td>
+        <td>Cup</td>
+        <td>Sugar</td>
+        <td>
+          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
+        </td>
+      </tr>
+      <tr>
+        <td>1/2</td>
+        <td>Cup</td>
+        <td>Butter, softened</td>
+        <td>
+          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div> <!-- ingredient table row -->
+
+<div class="row"> <!-- Nutrition Information -->
+  <div class="input-field col s6 m3">
+    <input disabled id="calories" type="text">
+    <label for="calories">Calories Per Serving</label>
+  </div>
+  <div class="input-field col s6 m3">
+    <input disabled id="protein" type="text">
+    <label for="protein">Protein (g)</label>
+  </div>
+  <div class="input-field col s6 m3">
+    <input disabled id="carbohydrate" type="text">
+    <label for="carbohydrate">Carbohydrates (g)</label>
+  </div>
+  <div class="input-field col s6 m3">
+    <input disabled id="fat" type="text">
+    <label for="fat">Fat (g)</label>
+  </div>
+</div> <!-- nutrition row -->

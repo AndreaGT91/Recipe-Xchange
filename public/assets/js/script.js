@@ -1,5 +1,6 @@
 $(document).ready(function(){
-  $("#main-content").load("search.html"); 
-  $(".dropdown-trigger").dropdown();
-  $("select").formSelect();
+  $("#main-content").load("add.html", function(){
+    $(".dropdown-trigger").dropdown();
+    $("select").formSelect();
+  }) 
 });
