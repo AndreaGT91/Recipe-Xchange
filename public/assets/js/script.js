@@ -1,5 +1,6 @@
 // Global array for stashing ingredient list for selected recipe
 let ingredientArray = [];
+let currentRecipe = {};
 
 // TODO: for testing only
 ingredientArray = [
@@ -54,6 +55,17 @@ $(document).ready(function() {
 
     // TODO: Need some way to know if we are adding new recipe, or updating existing recipe (and its id),
     // or know which recipe id to display on search page
+    $.get("/api/recipe_data").then(function(data) {
+      if (data.id) {
+        loadRecipeData(data);
+      }
+      else {
+        clearRecipeData(true);
+      };
+    })
+    // .catch(function(error) {
+    //   clearRecipeData(true);
+    // });
   }) 
 });
 
@@ -64,7 +76,7 @@ function saveRecipe(event) {
 
 // Reset button click event - clears all fields, including ingredients and nutrition info
 function resetForm(event) {
-
+  clearRecipeData(false);
 };
 
 // Ingredient Save click event - adds/updates ingredient
@@ -83,6 +95,59 @@ function editIngredient(event) {
   if ($(this).rowIndex > 0) {
     ingredientArray[$(this).rowIndex]
   };
+};
+
+// Load the passed recipe object into the data fields; retrieve ingredients, too
+function loadRecipeData(recipeData) {
+  // Set value of recipe global
+  currentRecipe = recipeData;
+
+  // Set values of all the main recipe fields
+  $("#title").val(currentRecipe.title);
+  $("#source").val(currentRecipe.source);
+  $("#public").val(currentRecipe.public);
+  $("#category1").val(currentRecipe.category1);
+  $("#category2").val(currentRecipe.category2);
+  $("#category3").val(currentRecipe.category3);
+  $("#recipe-desc").val(currentRecipe.description);
+  $("#prep-time").val(currentRecipe.prepTime);
+  $("#cook-time").val(currentRecipe.cookTime);
+  $("#num-servings").val(currentRecipe.numServings);
+  $("#instructions").val(currentRecipe.instructions);
+
+  // Set oven temp based on if Imperial or Metric
+  if ($("#imperial").val()) {
+    $("#oven-temp").val(currentRecipe.ovenTempF);
+  }
+  else {
+    $("#oven-temp").val(currentRecipe.ovenTempC);
+  };
+
+  // Retrieve ingredients for this recipe
+  $.get("/api/ingredient_data:" + currentRecipe.id).then(function(data) {
+    ingredientArray = data;
+  });
+};
+
+// Clear all fields
+function clearRecipeData(resetForm) {
+  // If not called from the Reset button on click handler, then need to reset form
+  if (resetForm) {
+    $(".recipe-form")[0].reset();
+  };
+
+  // Clear globals
+  currentRecipe = {};
+  ingredientArray = [];
+
+  // Clear ingredient add/update form
+  $(".ingredient-form")[0].reset();
+
+  // Clear ingredient table
+  $("#ingredient-body").children().remove();
+
+  // Clear nutrition fields
+  calculateNutrition();
 };
 
 // Loop through all ingredients to calculate total nutrition info
@@ -119,21 +184,27 @@ function getDecimal(number) {
     let numerator = 0;
     let denominator = 1;
 
-    let nums = number.split("/",2);
+    let nums = number.split("/");
     let leftSide = nums[0].split(" ",2);
 
-    if (nums.length === 2) {
+    // If nums length is 1, then there was no slash. 
+    // If, for some reason, there is more than one slash, just ignore anything beyond the first
+    if (nums.length > 1) {
       denominator = parseInt(nums[1]);
     };
 
+    // If leftSide length is 1, then there was only one number to the left of the slash, or no slash at all
     if (leftSide.length === 1) {
       numerator = parseInt(leftSide[0]);
     }
+    // The whole number is the first number that is followed by a space, numerator is next number
+    // If, for some reason, there is more than two numbers separated by a space, just ignore anything after the first two
     else {
       wholeNum = parseInit(leftSide[0]);
       numerator = parseInt(leftSide[1]);
     };
 
+    // Double check that everything is a number; if not, reset to defaults
     if (isNaN(wholeNum)) {
       wholeNum = 0;
     };
@@ -164,7 +235,7 @@ function getFraction(decimal) {
   let fraction = (decimal - wholeNum).toFixed(2);
   let fractionString = "";
 
-  // Only fractional values allowed in cooking
+  // These are the only fractional values allowed in cooking
   switch (fraction) {
     case 0.25: 
       fractionString = "1/4";

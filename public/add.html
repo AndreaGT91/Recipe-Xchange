@@ -24,7 +24,7 @@
         <label for="source">Source</label>
       </div>
       <div class="input-field col s1">
-        <label><input type="checkbox" class="filled-in" checked="checked" /><span>Public</span></label>
+        <label><input id="public" type="checkbox" class="filled-in" checked="checked" /><span>Public</span></label>
       </div>
     </div> <!-- title/source row -->
     <div class="row">
@@ -58,7 +58,7 @@
       </div>
       <div class="input-field col s6 m3">
         <input id="oven-temp" type="text">
-        <label for="oven-temp">Oven Temp</label>
+        <label for="oven-temp">Oven Temp (°F)</label>
       </div>
       <div class="input-field col s6 m3">
         <input id="num-servings" type="text" required>
@@ -125,7 +125,7 @@
         <th>Delete</th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id="ingredient-body">
       <tr>
         <td>2</td>
         <td>Cup</td>

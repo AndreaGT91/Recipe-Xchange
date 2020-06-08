@@ -35,7 +35,7 @@ CREATE TABLE recipes (
   ovenTempF INTEGER,
   ovenTempC INTEGER,
   numServings INTEGER,
-  instructions INTEGER,
+  instructions TEXT,
   category1 INTEGER,
   category2 INTEGER,
   category3 INTEGER,
