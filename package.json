@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/AndreaGT91/Recipe-Xchange/issues"
   },
-  "homepage": "https://github.com/AndreaGT91/Recipe-Xchange#readme"
+  "homepage": "https://github.com/AndreaGT91/Recipe-Xchange#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "path": "^0.12.7"
+  }
 }

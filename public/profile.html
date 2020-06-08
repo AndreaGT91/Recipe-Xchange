@@ -1,0 +1,118 @@
+<div class="row">
+  <!-- Main user profile properties -->
+  <form action="#" class="col s12">
+    <div class="row">
+      <div class="col s2">
+        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action">Save<i
+            class="material-icons left">save_alt</i></button>
+      </div>
+      <div class="col s8">
+        <h5 class="center">Manage Profile</h5>
+      </div>
+      <div class="col s2">
+        <button class="btn waves-effect waves-light teal darken-4 right" type="reset">Cancel<i
+            class="material-icons left">clear</i></button>
+      </div>
+    </div>
+    <div class="row">
+      <!-- first column of user data -->
+      <div class="col s12 m6">
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="username" type="email" required>
+            <label for="username">Email/Username</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="password" type="password" required>
+            <label for="password">Password</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="password-confirm" type="password" required>
+            <label for="password-confirm">Confirm Password</label>
+          </div>
+        </div>
+      </div> <!-- first column of user data -->
+      <div class="col s12 m6">
+        <!-- second column of user data -->
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="first-name" type="text" required>
+            <label for="first-name">First Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="last-name" type="text">
+            <label for="last-name">Last Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="location" type="text">
+            <label for="location">Location</label>
+          </div>
+        </div>
+      </div> <!-- second column of user data -->
+    </div> <!-- main info row -->
+    <div class="row">
+      <div class="input-field col s12">
+        <textarea id="about-me" class="materialize-textarea"></textarea>
+        <label for="about-me">About Me</label>
+      </div>
+    </div> <!-- about me row -->
+  </form> <!-- profile form -->
+</div> <!-- main user profile properties -->
+
+<div class="row">
+  <!-- Recipe table -->
+  <table class="striped responsive-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Date Added</th>
+        <th>Public</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Chicken Parmesean</td>
+        <td>03/15/2020</td>
+        <td><input type="checkbox" checked="checked" /><span></span></td>
+        <td>
+          <button class="btn waves-effect waves-light teal darken-4 editBtn"><i
+              class="material-icons left">edit</i><span class="hide-on-small-only">Edit</span></button>
+          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
+        </td>
+      </tr>
+      <tr>
+        <td>Chocolate Cake</td>
+        <td>01/31/2020</td>
+        <td><input type="checkbox" checked="checked" /><span></span></td>
+        <td>
+          <button class="btn waves-effect waves-light teal darken-4 editBtn"><i
+              class="material-icons left">edit</i><span class="hide-on-small-only">Edit</span></button>
+          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
+        </td>
+      </tr>
+      <tr>
+        <td>Quiche Florentine</td>
+        <td>05/01/2020</td>
+        <td><input type="checkbox" checked="checked" /><span></span></td>
+        <td>
+          <button class="btn waves-effect waves-light teal darken-4 editBtn"><i
+              class="material-icons left">edit</i><span class="hide-on-small-only">Edit</span></button>
+          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div> <!-- recipe table row -->
+<br>

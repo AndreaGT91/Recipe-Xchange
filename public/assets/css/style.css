@@ -1,0 +1,72 @@
+/* From Materialize documentation */
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+/* From Materialize documentation */
+main {
+  flex: 1 0 auto;
+}
+
+button {
+  margin-top: 20px;
+}
+
+.editBtn, .deleteBtn {
+  margin-top: 0px;
+}
+
+@media screen and (max-width: 400px) {
+  nav, .navbar-fixed {
+    height: 125px;
+  }
+}
+
+.switch label input[type=checkbox]:checked + .lever {
+  background-color: lightgray;
+}
+
+.switch label input[type=checkbox]:checked + .lever:after {
+  background-color: white;
+}
+
+.switch label .lever {
+  background-color: lightgray;
+}
+
+.switch label .lever:after {
+  background-color: white;
+}
+
+.nav-wrapper {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.background {
+  background-color: lightgray;
+  background-image: url("../img/dirty-pattern-paint-room-block.jpg");
+  background-repeat: round;
+  width: 100% !important; /* mobile was not displaying properly without this */
+}
+
+.main-container {
+  width: 90%;
+  background-color: white;
+  position: relative;
+  margin-top: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.footer-container {
+  width: 100%;
+}
+
+.page-footer {
+  padding-top: 0px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
