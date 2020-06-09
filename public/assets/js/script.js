@@ -1,172 +1,101 @@
-// Global array for stashing ingredient list for selected recipe
-let ingredientArray = [];
+// *********************
+// GLOBALS FOR ALL PAGES
+// *********************
+// Need URL to determine which page to load, and which data
+const url = window.location.search;
+// Need to know if using Imperial or Metric Units; default to Imperial because we are AMERICANS!
+let isImperial = true;
+
+// ********************
+// USER PROFILE GLOBALS
+// ********************
+// Current user being added/updated
+let currentUser = {};
+
+// ******************
+// ADD/UPDATE GLOBALS
+// ******************
+// Current recipe/ingredient being added/updated
 let currentRecipe = {};
 let currentIngredient = {};
+// Global array for stashing ingredient list for selected recipe
+let ingredientArray = [];
 
-// TODO: for testing only
-currentRecipe = {
-  id: 0,
-  title: "Chocolate Chip Cookies",
-  source: "ORIGINAL NESTLÉ® TOLL HOUSE® CHOCOLATE CHIP COOKIES",
-  public: true,
-  category1: null,
-  category2: null,
-  category3: null,
-  description: "The original. The best.",
-  prepTime: 15,
-  cookTime: 9,
-  numServings: 30,
-  instructions: `COMBINE flour, baking soda and salt in small bowl. Beat butter, granulated sugar, brown sugar and 
-    vanilla extract in large mixer bowl until creamy. Add eggs, one at a time, beating well after each addition. 
-    Gradually beat in flour mixture. Stir in morsels and nuts. Drop by rounded tablespoon onto ungreased baking sheets.
-    \n\n BAKE for 9 to 11 minutes or until golden brown. Cool on baking sheets for 2 minutes; 
-    remove to wire racks to cool completely.`,
-  ovenTempF: 375,
-  ovenTempC: 190,
-  userID: 0};
-
-ingredientArray = [
-  {id: 0,
-    name: "All-purpose flour",
-    imperialQty: 2.5,
-    imperialUnit: "Cup",
-    metricQty: 250,
-    metricUnit: "g",
-    calories: 910,
-    protein: 26,
-    carbs: 190,
-    fat: 2.4,
-    recipeID: 0},
-  {id: 1,
-    name: "Baking soda",
-    imperialQty: 1,
-    imperialUnit: "Tsp",
-    metricQty: 150,
-    metricUnit: "g",
-    calories: 576,
-    protein: 0,
-    carbs: 150,
-    fat: 0,
-    recipeID: 0},
-  {id: 2,
-    name: "Salt",
-    imperialQty: 1,
-    imperialUnit: "Tsp",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0},
-  {id: 3,
-    name: "Butter, softened",
-    imperialQty: 1,
-    imperialUnit: "Cup",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0},
-  {id: 4,
-    name: "Granulated sugar",
-    imperialQty: 0.75,
-    imperialUnit: "Cup",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0},
-  {id: 5,
-    name: "Packed brown sugar",
-    imperialQty: 0.75,
-    imperialUnit: "Cup",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0},
-  {id: 6,
-    name: "Vanilla extract",
-    imperialQty: 1,
-    imperialUnit: "Tsp",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0},
-  {id: 7,
-    name: "Large eggs",
-    imperialQty: 2,
-    imperialUnit: "N/A",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0},
-  {id: 8,
-    name: "NESTLÉ® TOLL HOUSE® Semi-Sweet Chocolate Morsels",
-    imperialQty: 2,
-    imperialUnit: "Cup",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0},
-  {id: 9,
-    name: "Chopped nuts",
-    imperialQty: 1,
-    imperialUnit: "Cup",
-    metricQty: 112,
-    metricUnit: "g",
-    calories: 816,
-    protein: 1,
-    carbs: 0.1,
-    fat: 96,
-    recipeID: 0}];
-
+// *****************
+// ON READY FUNCTION
+// *****************
 // Once DOM is full loaded, add in the appropriate page definition
 // Use its callback to load the rest of the event handlers.
 $(document).ready(function() {
-  // TODO: Need some way to know which sub-page to load
-  $("#main-content").load("add.html", function(){
+
+  function globalSetup() {
     // These are needed for every page
-    $(".dropdown-trigger").dropdown();
-    $("select").formSelect();
-    // These are just for the Add/Update page
-    $("#saveBtn").click(saveRecipe);
-    $("#resetBtn").click(resetForm);
-    $("#ingredBtn").click(saveIngredient);
+    $(".dropdown-trigger").dropdown(); // Makes Materialize dropdowns function
+    $("select").formSelect(); // Makes Materialize select fields function
+    $("#imperial").click(toggleUnits); // Event handler for Imperial/Metric unit selector
+  };
 
-    loadRecipeData(currentRecipe); // TODO: for testing only
+  let recipeID = -1; // If -1, then no recipe loaded
+  let userID = -1; // If -1, then no user loaded
 
-    // TODO: Need some way to know if we are adding new recipe, or updating existing recipe (and its id),
-    // or know which recipe id to display on search page
-// TODO: Comment out just for testing      $.get("/api/recipe_data").then(function(data) {
-// TODO: Comment out just for testing        if (data.id) {
-// TODO: Comment out just for testing        loadRecipeData(data);
-// TODO: Comment out just for testing        }
-// TODO: Comment out just for testing        else {
-// TODO: Comment out just for testing          clearRecipeData(true);
-// TODO: Comment out just for testing        };
-// TODO: Comment out just for testing      })
-    // .catch(function(error) {
-    //   clearRecipeData(true);
-    // });
-  }) 
+  // If ?recipe_id in URL, then we need Add/Update page
+  if (url.indexOf("?recipe_id=") !== -1) {
+    recipeID = url.split("=")[1];
+
+    $("#main-content").load("add.html", function(){
+      globalSetup();
+
+      // These are just for the Add/Update page
+      $("#saveBtn").click(saveRecipe);
+      $("#resetBtn").click(resetForm);
+      $("#ingredBtn").click(saveIngredient);
+
+      // If recipeID is -1, then we just need blank page; otherwise, get recipe data
+      if (recipeID !== -1) {
+        $.get("/api/recipe_data/:id" + recipeID).then(function(data) {
+          currentRecipe = data;
+          loadRecipeData();
+        })
+        .catch(function(error) {
+          // TODO: Use something other than alert
+          alert("Could not load recipe.");
+        });
+      };
+    });
+  }
+  // If ?user_id in URL, then we need Profile page
+  else if (url.indexOf("?user_id=") !== -1) {
+    userID = url.split("=")[1];
+
+    $("#main-content").load("profile.html", function(){
+      globalSetup();
+
+      // If userID is -1, then we just need blank page; otherwise, get user data
+      if (userID !== -1) {
+        $.get("/api/user_data/:id" + userID).then(function(data) {
+          currentUser = data;
+// TODO:           loadUserData();
+        })
+        .catch(function(error) {
+          // TODO: Use something other than alert
+          alert("Could not load user information.");
+        });
+      };
+    });
+  }
+  // Otherwise, we need Search page
+  else {
+    $("#main-content").load("search.html", function(){
+      globalSetup();
+    });
+  };
 });
+
+// Imperial/Metric toggle on click event
+function toggleUnits() {
+  console.log("toggle: ", this);
+  isImperial = this.checked;
+};
 
 // Save button click event - adds/updates recipe and all ingredients
 function saveRecipe(event) {
@@ -185,7 +114,7 @@ function saveRecipe(event) {
   // TODO: currentRecipe.userID = ???
 
   // Set oven temp based on if Imperial or Metric, convert for other setting
-  if ($("#imperial").val()) {
+  if (isImperial) {
     currentRecipe.ovenTempF = $("#oven-temp").val();
     currentRecipe.ovenTempC = Math.round((currentRecipe.ovenTempF - 32) * 5 / 9);
   }
@@ -203,7 +132,7 @@ function saveRecipe(event) {
         // TODO: Not going to work as is. Need some mechanism for adding/deleting/updating ingredients
         $.post("/api/ingredient_data", ingredientArray)
           .then(function() {
-            loadRecipeData(currentRecipe);
+            loadRecipeData();
             // TODO: Use something other than alert
             alert("Recipe updated!");
           })
@@ -229,7 +158,7 @@ function saveRecipe(event) {
 
         $.post("/api/ingredient_data", ingredientArray)
           .then(function() {
-            loadRecipeData(currentRecipe);
+            loadRecipeData();
             // TODO: Use something other than alert
             alert("Recipe added!");
           })
@@ -274,7 +203,7 @@ function editIngredient(event) {
   if (this.rowIndex > 0) {
     currentIngredient = ingredientArray[(this.rowIndex)-1]; // subtract one because of header
 
-    if ($("#imperial").val()) {
+    if (isImperial) {
       $("#quantity").val(getFraction(currentIngredient.imperialQty));
       $("#imperialUnit").val(currentIngredient.imperialUnit);
       $("#imperialUnit").formSelect(); // Dropdown refresh
@@ -291,10 +220,7 @@ function editIngredient(event) {
 };
 
 // Load the passed recipe object into the data fields; retrieve ingredients, too
-function loadRecipeData(recipeData) {
-  // Set value of recipe global
-// TODO: commented out just for testing  currentRecipe = recipeData;
-
+function loadRecipeData() {
   // Set values of all the main recipe fields
   $("#title").val(currentRecipe.title);
   $("#source").val(currentRecipe.source);
@@ -311,7 +237,7 @@ function loadRecipeData(recipeData) {
   M.textareaAutoResize($("#instructions")); // Won't resize to fit data without this
 
   // Set oven temp based on if Imperial or Metric, set label, too
-  if ($("#imperial").val()) {
+  if (isImperial) {
     $("#oven-temp").val(currentRecipe.ovenTempF);
     $("#temp-label").text("Oven Temp (°F)");
   }
@@ -334,7 +260,7 @@ function loadRecipeData(recipeData) {
     // Create a table row for each ingredient
     ingredientArray.forEach(item => {
       // Get correct quantity and unit based on Imperial/Metric
-      if ($("#imperial").val()) {
+      if (isImperial) {
         qty = getFraction(item.imperialQty);
         unit = item.imperialUnit;
       }
