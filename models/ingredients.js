@@ -8,13 +8,13 @@ module.exports = function (sequelize, DataTypes) {
             }
         },
         imperialQty: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.FLOAT,
             allowNull: false,
             defaultValue: 1
         },
         imperialUnit: DataTypes.STRING,
         metricQty: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.FLOAT,
             allowNull: false,
             defaultValue: 1
         },
@@ -23,10 +23,6 @@ module.exports = function (sequelize, DataTypes) {
         protein: DataTypes.INTEGER,
         carbs: DataTypes.INTEGER,
         fat: DataTypes.INTEGER,
-        recipeID: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        }
     });
 
     Ingredients.associate = function (models) {
