@@ -170,7 +170,79 @@ $(document).ready(function() {
 
 // Save button click event - adds/updates recipe and all ingredients
 function saveRecipe(event) {
+  // Get data from main recipe fields
+  currentRecipe.title = $("#title").val();
+  currentRecipe.source = $("#source").val();
+  currentRecipe.public = $("#public").val();
+  currentRecipe.category1 = $("#category1").val();
+  currentRecipe.category2 = $("#category2").val();
+  currentRecipe.category3 = $("#category3").val();
+  currentRecipe.description = $("#recipe-desc").val();
+  currentRecipe.prepTime = $("#prep-time").val();
+  currentRecipe.cookTime = $("#cook-time").val();
+  currentRecipe.numServings = $("#num-servings").val();
+  currentRecipe.instructions = $("#instructions").val();
+  // TODO: currentRecipe.userID = ???
 
+  // Set oven temp based on if Imperial or Metric, convert for other setting
+  if ($("#imperial").val()) {
+    currentRecipe.ovenTempF = $("#oven-temp").val();
+    currentRecipe.ovenTempC = Math.round((currentRecipe.ovenTempF - 32) * 5 / 9);
+  }
+  else {
+    currentRecipe.ovenTempC = $("#oven-temp").val();
+    currentRecipe.ovenTempF = Math.round((currentRecipe.ovenTempC / 5 * 9) + 32);
+  };
+
+  // TODO: What's the best way to determine if updating or adding???
+
+  // Update
+  if (currentRecipe.id) {
+    $.post("/api/recipe_data/:" + currentRecipe.id, currentRecipe)
+      .then(function() {
+        // TODO: Not going to work as is. Need some mechanism for adding/deleting/updating ingredients
+        $.post("/api/ingredient_data", ingredientArray)
+          .then(function() {
+            loadRecipeData(currentRecipe);
+            // TODO: Use something other than alert
+            alert("Recipe updated!");
+          })
+          .catch(function() {
+            // TODO: Use something other than alert
+            alert("Unable to update ingredients.");
+          });
+      })
+      .catch(function() {
+        // TODO: Use something other than alert
+        alert("Unable to update recipe.");
+      });
+  }
+  // Add
+  else {
+    $.post("/api/recipe_data", currentRecipe)
+      .then(function(data) {
+        currentRecipe.id = data;
+        // Set recipeID for each ingredient
+        ingredientArray.forEach(item => {
+          item.recipeID = currentRecipe.id;
+        });
+
+        $.post("/api/ingredient_data", ingredientArray)
+          .then(function() {
+            loadRecipeData(currentRecipe);
+            // TODO: Use something other than alert
+            alert("Recipe added!");
+          })
+          .catch(function() {
+            // TODO: Use something other than alert
+            alert("Unable to add ingredients.");
+          });
+      })
+      .catch(function() {
+        // TODO: Use something other than alert
+        alert("Unable to add recipe.");
+      });
+  };
 };
 
 // Reset button click event - clears all fields, including ingredients and nutrition info
@@ -180,6 +252,14 @@ function resetForm(event) {
 
 // Ingredient Save click event - adds/updates ingredient
 function saveIngredient(event) {
+  const ingredTable = $("#ingredient-body");
+
+  ingredTable[0].rows.forEach(item => {
+    item.cells[0].innerText // quantity
+    item.cells[1].innerText // unit
+    item.cells[2].innerText // name
+  });  
+
   calculateNutrition();
 };
 

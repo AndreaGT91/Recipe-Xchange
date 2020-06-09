@@ -1,5 +1,5 @@
 require('dotenv').config();
-​
+
 module.exports = {
   development: {
     username: process.env.LOCAL_USER,
