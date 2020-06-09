@@ -30,7 +30,7 @@ module.exports = function (sequelize, DataTypes) {
         imperial: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            defaultValue: true,
+            defaultValue: true
         },
     });
 
@@ -41,6 +41,10 @@ module.exports = function (sequelize, DataTypes) {
     Users.addHook("beforeCreate", function (user) {
         user.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(10), null);
     });
+
+    Users.associate = function(models) {
+        Users.hasMany(models.Recipes);
+      };
 
     return Users;
 };
