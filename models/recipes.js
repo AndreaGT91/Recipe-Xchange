@@ -28,10 +28,6 @@ module.exports = function (sequelize, DataTypes) {
         public: {
             type: DataTypes.BOOLEAN,
             defaultValue: true
-        },
-        userID: {
-            type: DataTypes.INTEGER,
-            allowNull: false
         }
     });
 
