@@ -2,9 +2,9 @@ require("dotenv").config();
 
 module.exports = {
   development: {
-    username: "root",
-    password: "root",
-    database: "recipexchange",
+    username: process.env.LOCAL_USER,
+    password: process.env.LOCAL_PASSWORD,
+    database: process.env.DB_NAME,
     host: "localhost",
     dialect: "mysql",
   },
