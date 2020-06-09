@@ -35,15 +35,17 @@ module.exports = function (sequelize, DataTypes) {
         }
     });
 
-    Recipes.associate = function(models) {
+    Recipes.associate = function (models) {
         Recipes.belongsTo(models.Users, {
-          foreignKey: {
-            allowNull: false
-          }
+            foreignKey: {
+                allowNull: false
+            }
         });
 
         Recipes.belongsTo(models.Categories);
-      };
+
+        Recipes.hasMany(models.Ingredients);
+    };
 
     return Recipes;
 };
