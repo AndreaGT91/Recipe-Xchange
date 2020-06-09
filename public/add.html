@@ -50,15 +50,15 @@
     <div class="row">
       <div class="input-field col s6 m3">
         <input id="prep-time" type="text">
-        <label for="prep-time">Prep Time</label>
+        <label for="prep-time">Prep Time (minutes)</label>
       </div>
       <div class="input-field col s6 m3">
         <input id="cook-time" type="text">
-        <label for="cook-time">Cook Time</label>
+        <label for="cook-time">Cook Time (minutes)</label>
       </div>
       <div class="input-field col s6 m3">
         <input id="oven-temp" type="text">
-        <label for="oven-temp">Oven Temp (°F)</label>
+        <label for="oven-temp" id="temp-label">Oven Temp (°F)</label>
       </div>
       <div class="input-field col s6 m3">
         <input id="num-servings" type="text" required>
@@ -81,22 +81,24 @@
     <label for="quantity">Quantity</label>
   </div>
   <div class="input-field col s6 m2">
-    <select>
-      <option value="0" selected>N/A</option>
-      <option value="1">Oz</option>
-      <option value="2">Lb</option>
-      <option value="3">Tsp</option>
-      <option value="4">Tbs</option>
-      <option value="5">Cup</option>
-      <option value="6">Pt</option>
-      <option value="7">Qt</option>
-      <option value="8">Gal</option> -->
-      <!-- Metric options
-        <option value="1">mL</option>
-        <option value="2">L</option>
-        <option value="3">g</option>
-        <option value="4">kg</option> -->
+    <select id="imperialUnit">
+      <option value="N/A" selected>N/A</option>
+      <option value="Oz">Oz</option>
+      <option value="Lb">Lb</option>
+      <option value="Tsp">Tsp</option>
+      <option value="Tbs">Tbs</option>
+      <option value="Cup">Cup</option>
+      <option value="Pt">Pt</option>
+      <option value="Qt">Qt</option>
+      <option value="Gal">Gal</option> -->
     </select>
+    <!-- <select id="metricUnit">
+      <option value="N/A" selected>N/A</option>
+      <option value="mL">mL</option>
+      <option value="L">L</option>
+      <option value="g">g</option>
+      <option value="kg">kg</option>
+    </select> -->
     <label>Unit</label>
   </div>
   <div class="input-field col s10 m7">
@@ -126,33 +128,7 @@
       </tr>
     </thead>
     <tbody id="ingredient-body">
-      <tr>
-        <td>2</td>
-        <td>Cup</td>
-        <td>All-purpose flour</td>
-        <td>
-          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
-        </td>
-      </tr>
-      <tr>
-        <td>3/4</td>
-        <td>Cup</td>
-        <td>Sugar</td>
-        <td>
-          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
-        </td>
-      </tr>
-      <tr>
-        <td>1/2</td>
-        <td>Cup</td>
-        <td>Butter, softened</td>
-        <td>
-          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
-        </td>
-      </tr>
+      <!-- Table rows added in javascript -->
     </tbody>
   </table>
 </div> <!-- ingredient table row -->

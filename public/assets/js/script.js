@@ -1,12 +1,34 @@
 // Global array for stashing ingredient list for selected recipe
 let ingredientArray = [];
 let currentRecipe = {};
+let currentIngredient = {};
 
 // TODO: for testing only
+currentRecipe = {
+  id: 0,
+  title: "Chocolate Chip Cookies",
+  source: "ORIGINAL NESTLÉ® TOLL HOUSE® CHOCOLATE CHIP COOKIES",
+  public: true,
+  category1: null,
+  category2: null,
+  category3: null,
+  description: "The original. The best.",
+  prepTime: 15,
+  cookTime: 9,
+  numServings: 30,
+  instructions: `COMBINE flour, baking soda and salt in small bowl. Beat butter, granulated sugar, brown sugar and 
+    vanilla extract in large mixer bowl until creamy. Add eggs, one at a time, beating well after each addition. 
+    Gradually beat in flour mixture. Stir in morsels and nuts. Drop by rounded tablespoon onto ungreased baking sheets.
+    \n\n BAKE for 9 to 11 minutes or until golden brown. Cool on baking sheets for 2 minutes; 
+    remove to wire racks to cool completely.`,
+  ovenTempF: 375,
+  ovenTempC: 190,
+  userID: 0};
+
 ingredientArray = [
   {id: 0,
     name: "All-purpose flour",
-    imperialQty: 2,
+    imperialQty: 2.5,
     imperialUnit: "Cup",
     metricQty: 250,
     metricUnit: "g",
@@ -16,9 +38,9 @@ ingredientArray = [
     fat: 2.4,
     recipeID: 0},
   {id: 1,
-    name: "Sugar",
-    imperialQty: 0.75,
-    imperialUnit: "Cup",
+    name: "Baking soda",
+    imperialQty: 1,
+    imperialUnit: "Tsp",
     metricQty: 150,
     metricUnit: "g",
     calories: 576,
@@ -27,8 +49,85 @@ ingredientArray = [
     fat: 0,
     recipeID: 0},
   {id: 2,
+    name: "Salt",
+    imperialQty: 1,
+    imperialUnit: "Tsp",
+    metricQty: 112,
+    metricUnit: "g",
+    calories: 816,
+    protein: 1,
+    carbs: 0.1,
+    fat: 96,
+    recipeID: 0},
+  {id: 3,
     name: "Butter, softened",
-    imperialQty: 0.5,
+    imperialQty: 1,
+    imperialUnit: "Cup",
+    metricQty: 112,
+    metricUnit: "g",
+    calories: 816,
+    protein: 1,
+    carbs: 0.1,
+    fat: 96,
+    recipeID: 0},
+  {id: 4,
+    name: "Granulated sugar",
+    imperialQty: 0.75,
+    imperialUnit: "Cup",
+    metricQty: 112,
+    metricUnit: "g",
+    calories: 816,
+    protein: 1,
+    carbs: 0.1,
+    fat: 96,
+    recipeID: 0},
+  {id: 5,
+    name: "Packed brown sugar",
+    imperialQty: 0.75,
+    imperialUnit: "Cup",
+    metricQty: 112,
+    metricUnit: "g",
+    calories: 816,
+    protein: 1,
+    carbs: 0.1,
+    fat: 96,
+    recipeID: 0},
+  {id: 6,
+    name: "Vanilla extract",
+    imperialQty: 1,
+    imperialUnit: "Tsp",
+    metricQty: 112,
+    metricUnit: "g",
+    calories: 816,
+    protein: 1,
+    carbs: 0.1,
+    fat: 96,
+    recipeID: 0},
+  {id: 7,
+    name: "Large eggs",
+    imperialQty: 2,
+    imperialUnit: "N/A",
+    metricQty: 112,
+    metricUnit: "g",
+    calories: 816,
+    protein: 1,
+    carbs: 0.1,
+    fat: 96,
+    recipeID: 0},
+  {id: 8,
+    name: "NESTLÉ® TOLL HOUSE® Semi-Sweet Chocolate Morsels",
+    imperialQty: 2,
+    imperialUnit: "Cup",
+    metricQty: 112,
+    metricUnit: "g",
+    calories: 816,
+    protein: 1,
+    carbs: 0.1,
+    fat: 96,
+    recipeID: 0},
+  {id: 9,
+    name: "Chopped nuts",
+    imperialQty: 1,
     imperialUnit: "Cup",
     metricQty: 112,
     metricUnit: "g",
@@ -50,19 +149,19 @@ $(document).ready(function() {
     $("#saveBtn").click(saveRecipe);
     $("#resetBtn").click(resetForm);
     $("#ingredBtn").click(saveIngredient);
-    $("#deleteBtn").click(deleteIngredient);
-    $(".tr").click(editIngredient);
+
+    loadRecipeData(currentRecipe); // TODO: for testing only
 
     // TODO: Need some way to know if we are adding new recipe, or updating existing recipe (and its id),
     // or know which recipe id to display on search page
-    $.get("/api/recipe_data").then(function(data) {
-      if (data.id) {
-        loadRecipeData(data);
-      }
-      else {
-        clearRecipeData(true);
-      };
-    })
+// TODO: Comment out just for testing      $.get("/api/recipe_data").then(function(data) {
+// TODO: Comment out just for testing        if (data.id) {
+// TODO: Comment out just for testing        loadRecipeData(data);
+// TODO: Comment out just for testing        }
+// TODO: Comment out just for testing        else {
+// TODO: Comment out just for testing          clearRecipeData(true);
+// TODO: Comment out just for testing        };
+// TODO: Comment out just for testing      })
     // .catch(function(error) {
     //   clearRecipeData(true);
     // });
@@ -92,15 +191,29 @@ function deleteIngredient(event) {
 // Ingredient table row click event - edit ingredient
 function editIngredient(event) {
   // Do nothing if they click on header row
-  if ($(this).rowIndex > 0) {
-    ingredientArray[$(this).rowIndex]
+  if (this.rowIndex > 0) {
+    currentIngredient = ingredientArray[(this.rowIndex)-1]; // subtract one because of header
+
+    if ($("#imperial").val()) {
+      $("#quantity").val(getFraction(currentIngredient.imperialQty));
+      $("#imperialUnit").val(currentIngredient.imperialUnit);
+      $("#imperialUnit").formSelect(); // Dropdown refresh
+    }
+    else {
+      $("#quantity").val(currentIngredient.metricQty);
+      $("#metricUnit").val(currentIngredient.metricUnit);
+      $("#metricUnit").formSelect(); // Dropdown refresh
+    };
+
+    $("#ingredient").val(currentIngredient.name);
+    M.updateTextFields(); // Labels won't move out of the way if you don't do this
   };
 };
 
 // Load the passed recipe object into the data fields; retrieve ingredients, too
 function loadRecipeData(recipeData) {
   // Set value of recipe global
-  currentRecipe = recipeData;
+// TODO: commented out just for testing  currentRecipe = recipeData;
 
   // Set values of all the main recipe fields
   $("#title").val(currentRecipe.title);
@@ -110,23 +223,60 @@ function loadRecipeData(recipeData) {
   $("#category2").val(currentRecipe.category2);
   $("#category3").val(currentRecipe.category3);
   $("#recipe-desc").val(currentRecipe.description);
+  M.textareaAutoResize($("#recipe-desc")); // Won't resize to fit data without this
   $("#prep-time").val(currentRecipe.prepTime);
   $("#cook-time").val(currentRecipe.cookTime);
   $("#num-servings").val(currentRecipe.numServings);
   $("#instructions").val(currentRecipe.instructions);
+  M.textareaAutoResize($("#instructions")); // Won't resize to fit data without this
 
-  // Set oven temp based on if Imperial or Metric
+  // Set oven temp based on if Imperial or Metric, set label, too
   if ($("#imperial").val()) {
     $("#oven-temp").val(currentRecipe.ovenTempF);
+    $("#temp-label").text("Oven Temp (°F)");
   }
   else {
     $("#oven-temp").val(currentRecipe.ovenTempC);
+    $("#temp-label").text("Oven Temp (°C)");
   };
 
   // Retrieve ingredients for this recipe
-  $.get("/api/ingredient_data:" + currentRecipe.id).then(function(data) {
-    ingredientArray = data;
-  });
+// TODO: Comment out just for testing  $.get("/api/ingredient_data:" + currentRecipe.id).then(function(data) {
+// TODO: Comment out just for testing    ingredientArray = data;
+
+    const buttonHtml = `<button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+      class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>`;
+    const ingredTable = $("#ingredient-body");
+    let newRow;
+    let qty;
+    let unit;
+
+    // Create a table row for each ingredient
+    ingredientArray.forEach(item => {
+      // Get correct quantity and unit based on Imperial/Metric
+      if ($("#imperial").val()) {
+        qty = getFraction(item.imperialQty);
+        unit = item.imperialUnit;
+      }
+      else {
+        qty = item.metricQty;
+        unit = item.metricUnit;
+      };
+
+      newRow = $("<tr>");
+      newRow.append($("<td>").html(qty));
+      newRow.append($("<td>").html(unit))
+      newRow.append($("<td>").html(item.name));
+      newRow.append($("<td>").html(buttonHtml));
+      ingredTable.append(newRow);
+    })
+// TODO: Comment out just for testing  })
+// TODO: Comment out just for testing  .finally(function() {
+    // Add event handlers after elements have been created
+    $(".deleteBtn").click(deleteIngredient);
+    $("tr").click(editIngredient);
+    calculateNutrition();
+// TODO: Comment out just for testing  });
 };
 
 // Clear all fields
@@ -137,8 +287,8 @@ function clearRecipeData(resetForm) {
   };
 
   // Clear globals
-  currentRecipe = {};
-  ingredientArray = [];
+// TODO: Comment out just for testing  currentRecipe = {};
+// TODO: Comment out just for testing  ingredientArray = [];
 
   // Clear ingredient add/update form
   $(".ingredient-form")[0].reset();
@@ -237,19 +387,19 @@ function getFraction(decimal) {
 
   // These are the only fractional values allowed in cooking
   switch (fraction) {
-    case 0.25: 
+    case "0.25": 
       fractionString = "1/4";
       break;
-    case 0.33:
+    case "0.33":
       fractionString = "1/3";
       break;
-    case 0.5:
+    case "0.50":
       fractionString = "1/2";
       break;
-    case 0.67:
+    case "0.67":
       fractionString = "2/3";
       break;
-    case 0.75:
+    case "0.75":
       fractionString = "3/4";
     // Default action is to remain blank string
   };
