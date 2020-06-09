@@ -13,7 +13,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require("./routes/html-routes.js")(app);
-require("./routes/api-routes.js")(app);
+require("./routes/user-api-routes.js")(app);
+require("./routes/recipe-api-routes.js")(app);
 
 app.listen(PORT, function () { console.log("App listening on PORT " + PORT); });
 
