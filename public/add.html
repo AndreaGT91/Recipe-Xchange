@@ -77,10 +77,10 @@
 <form action="#" class="row ingredient-form">
   <!-- Add/Update Ingredient Form -->
   <div class="input-field col s6 m2">
-    <input id="quantity" type="text" class="validate" pattern="\d+\s?\.?\d*\/?[1-9]" required>
+    <input id="quantity" type="text" class="validate" pattern="\d+\s?\.?\d*\/?[1-9]*" required>
     <label for="quantity">Quantity</label>
   </div>
-  <div class="input-field col s6 m2">
+  <div class="input-field col s6 m2" id="imperialUnit">  <!-- Default to not hidden -->
     <select id="imperialUnit">
       <option value="N/A" selected>N/A</option>
       <option value="Oz">Oz</option>
@@ -92,13 +92,16 @@
       <option value="Qt">Qt</option>
       <option value="Gal">Gal</option> -->
     </select>
-    <!-- <select id="metricUnit">
+    <label>Unit</label>
+  </div>
+  <div class="input-field col s6 m2" id="metricUnit" hidden>  <!-- Default to hidden -->
+    <select>
       <option value="N/A" selected>N/A</option>
       <option value="mL">mL</option>
       <option value="L">L</option>
       <option value="g">g</option>
       <option value="kg">kg</option>
-    </select> -->
+    </select>
     <label>Unit</label>
   </div>
   <div class="input-field col s10 m7">

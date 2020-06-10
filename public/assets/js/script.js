@@ -5,6 +5,7 @@
 const url = window.location.search;
 // Need to know if using Imperial or Metric Units; default to Imperial because we are AMERICANS!
 let isImperial = true;
+let currentPage = "";
 
 // ********************
 // USER PROFILE GLOBALS
@@ -20,16 +21,19 @@ let currentRecipe = {};
 let currentIngredient = {};
 // Global array for stashing ingredient list for selected recipe
 let ingredientArray = [];
+// Html for ingredient delete button
+const buttonHtml = `<button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+  class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>`;
 
-// *****************
-// ON READY FUNCTION
-// *****************
+// ***********************
+// FUNCTIONS FOR ALL PAGES
+// ***********************
 // Once DOM is full loaded, add in the appropriate page definition
 // Use its callback to load the rest of the event handlers.
 $(document).ready(function() {
 
+  // These are needed for every page
   function globalSetup() {
-    // These are needed for every page
     $(".dropdown-trigger").dropdown(); // Makes Materialize dropdowns function
     $("select").formSelect(); // Makes Materialize select fields function
     $("#imperial").click(toggleUnits); // Event handler for Imperial/Metric unit selector
@@ -37,227 +41,112 @@ $(document).ready(function() {
 
   let recipeID = -1; // If -1, then no recipe loaded
   let userID = -1; // If -1, then no user loaded
+  let urlArray = url.split("="); // Could have user_id and recipe_id, just user_id, or neither
 
-  // If ?recipe_id in URL, then we need Add/Update page
-  if (url.indexOf("?recipe_id=") !== -1) {
-    recipeID = url.split("=")[1];
+  // If ?user_id in URL, then we need either Profile page or Add/Update
+  if (url.indexOf("?user_id=") !== -1) {
+    userID = parseInt(urlArray[1]);
 
-    $("#main-content").load("add.html", function(){
-      globalSetup();
+    // Get user data
+// TODO: Testing    $.get("/api/user_data/" + userID, function(data) {
+// TODO: Testing      currentUser = data;
+      $("#user-name").text("Welcome " + currentUser.firstName + " " + currentUser.lastName);
 
-      // These are just for the Add/Update page
-      $("#saveBtn").click(saveRecipe);
-      $("#resetBtn").click(resetForm);
-      $("#ingredBtn").click(saveIngredient);
+      // If ?recipe_id in URL, then we need Add/Update page
+      if (url.indexOf("?recipe_id=") !== -1) {
+        recipeID = parseInt(urlArray[2]);
 
-      // If recipeID is -1, then we just need blank page; otherwise, get recipe data
-      if (recipeID !== -1) {
-        $.get("/api/recipe_data/:id" + recipeID).then(function(data) {
-          currentRecipe = data;
-          loadRecipeData();
-        })
-        .catch(function(error) {
-          // TODO: Use something other than alert
-          alert("Could not load recipe.");
+        $("#main-content").load("add.html", function() {
+          currentPage = "add";
+          globalSetup();
+
+          // These are just for the Add/Update page
+          $("#saveBtn").click(saveRecipe);
+          $("#resetBtn").click(resetForm);
+          $("#ingredBtn").click(saveIngredient);
+
+          // If recipeID is -1, then we just need blank page; otherwise, get recipe data
+          if (recipeID !== -1) {
+            $.get("/api/recipe_data/" + recipeID, function(data) {
+              currentRecipe = data;
+              toggleUnits();
+            });
+          };
         });
-      };
-    });
-  }
-  // If ?user_id in URL, then we need Profile page
-  else if (url.indexOf("?user_id=") !== -1) {
-    userID = url.split("=")[1];
-
-    $("#main-content").load("profile.html", function(){
-      globalSetup();
-
-      // If userID is -1, then we just need blank page; otherwise, get user data
-      if (userID !== -1) {
-        $.get("/api/user_data/:id" + userID).then(function(data) {
-          currentUser = data;
+      }
+      // Else, load Profile page
+      else {
+        $("#main-content").load("profile.html", function(){
+          currentPage = "profile";
+          globalSetup();
 // TODO:           loadUserData();
-        })
-        .catch(function(error) {
-          // TODO: Use something other than alert
-          alert("Could not load user information.");
         });
       };
-    });
+// TODO: Testing    });
   }
   // Otherwise, we need Search page
   else {
-    $("#main-content").load("search.html", function(){
+    $("#main-content").load("search.html", function() {
+      currentPage = "search";
       globalSetup();
+      toggleUnits();
     });
   };
 });
 
 // Imperial/Metric toggle on click event
 function toggleUnits() {
-  console.log("toggle: ", this);
-  isImperial = this.checked;
-};
+  isImperial = $("#imperial")[0].checked; // Don't use "this" because sometimes called directly
 
-// Save button click event - adds/updates recipe and all ingredients
-function saveRecipe(event) {
-  // Get data from main recipe fields
-  currentRecipe.title = $("#title").val();
-  currentRecipe.source = $("#source").val();
-  currentRecipe.public = $("#public").val();
-  currentRecipe.category1 = $("#category1").val();
-  currentRecipe.category2 = $("#category2").val();
-  currentRecipe.category3 = $("#category3").val();
-  currentRecipe.description = $("#recipe-desc").val();
-  currentRecipe.prepTime = $("#prep-time").val();
-  currentRecipe.cookTime = $("#cook-time").val();
-  currentRecipe.numServings = $("#num-servings").val();
-  currentRecipe.instructions = $("#instructions").val();
-  // TODO: currentRecipe.userID = ???
-
-  // Set oven temp based on if Imperial or Metric, convert for other setting
-  if (isImperial) {
-    currentRecipe.ovenTempF = $("#oven-temp").val();
-    currentRecipe.ovenTempC = Math.round((currentRecipe.ovenTempF - 32) * 5 / 9);
-  }
-  else {
-    currentRecipe.ovenTempC = $("#oven-temp").val();
-    currentRecipe.ovenTempF = Math.round((currentRecipe.ovenTempC / 5 * 9) + 32);
-  };
-
-  // TODO: What's the best way to determine if updating or adding???
-
-  // Update
-  if (currentRecipe.id) {
-    $.post("/api/recipe_data/:" + currentRecipe.id, currentRecipe)
-      .then(function() {
-        // TODO: Not going to work as is. Need some mechanism for adding/deleting/updating ingredients
-        $.post("/api/ingredient_data", ingredientArray)
-          .then(function() {
-            loadRecipeData();
-            // TODO: Use something other than alert
-            alert("Recipe updated!");
-          })
-          .catch(function() {
-            // TODO: Use something other than alert
-            alert("Unable to update ingredients.");
-          });
-      })
-      .catch(function() {
-        // TODO: Use something other than alert
-        alert("Unable to update recipe.");
-      });
-  }
-  // Add
-  else {
-    $.post("/api/recipe_data", currentRecipe)
-      .then(function(data) {
-        currentRecipe.id = data;
-        // Set recipeID for each ingredient
-        ingredientArray.forEach(item => {
-          item.recipeID = currentRecipe.id;
-        });
-
-        $.post("/api/ingredient_data", ingredientArray)
-          .then(function() {
-            loadRecipeData();
-            // TODO: Use something other than alert
-            alert("Recipe added!");
-          })
-          .catch(function() {
-            // TODO: Use something other than alert
-            alert("Unable to add ingredients.");
-          });
-      })
-      .catch(function() {
-        // TODO: Use something other than alert
-        alert("Unable to add recipe.");
-      });
-  };
-};
-
-// Reset button click event - clears all fields, including ingredients and nutrition info
-function resetForm(event) {
-  clearRecipeData(false);
-};
-
-// Ingredient Save click event - adds/updates ingredient
-function saveIngredient(event) {
-  const ingredTable = $("#ingredient-body");
-
-  ingredTable[0].rows.forEach(item => {
-    item.cells[0].innerText // quantity
-    item.cells[1].innerText // unit
-    item.cells[2].innerText // name
-  });  
-
-  calculateNutrition();
-};
-
-// Ingredient Delete click event - deletes selected ingredient
-function deleteIngredient(event) {
-  calculateNutrition();
-};
-
-// Ingredient table row click event - edit ingredient
-function editIngredient(event) {
-  // Do nothing if they click on header row
-  if (this.rowIndex > 0) {
-    currentIngredient = ingredientArray[(this.rowIndex)-1]; // subtract one because of header
-
+  // If on Add/Update or Search pages, need to update display and data
+  if ((currentPage === "add") || (currentPage === "search")) {
     if (isImperial) {
-      $("#quantity").val(getFraction(currentIngredient.imperialQty));
-      $("#imperialUnit").val(currentIngredient.imperialUnit);
-      $("#imperialUnit").formSelect(); // Dropdown refresh
+      $("#temp-label").text("Oven Temp (°F)");
+      $("#imperialUnit").removeAttr("hidden");
+      $("#metricUnit").attr("hidden", true);
     }
     else {
-      $("#quantity").val(currentIngredient.metricQty);
-      $("#metricUnit").val(currentIngredient.metricUnit);
-      $("#metricUnit").formSelect(); // Dropdown refresh
+      $("#temp-label").text("Oven Temp (°C)");
+      $("#metricUnit").removeAttr("hidden");
+      $("#imperialUnit").attr("hidden", true);
     };
 
-    $("#ingredient").val(currentIngredient.name);
-    M.updateTextFields(); // Labels won't move out of the way if you don't do this
+    loadRecipeData(); // Refresh recipe info to use correct units
   };
 };
 
-// Load the passed recipe object into the data fields; retrieve ingredients, too
+// Load the currentRecipe object and ingredients array into the data fields
 function loadRecipeData() {
-  // Set values of all the main recipe fields
-  $("#title").val(currentRecipe.title);
-  $("#source").val(currentRecipe.source);
-  $("#public").val(currentRecipe.public);
-  $("#category1").val(currentRecipe.category1);
-  $("#category2").val(currentRecipe.category2);
-  $("#category3").val(currentRecipe.category3);
-  $("#recipe-desc").val(currentRecipe.description);
-  M.textareaAutoResize($("#recipe-desc")); // Won't resize to fit data without this
-  $("#prep-time").val(currentRecipe.prepTime);
-  $("#cook-time").val(currentRecipe.cookTime);
-  $("#num-servings").val(currentRecipe.numServings);
-  $("#instructions").val(currentRecipe.instructions);
-  M.textareaAutoResize($("#instructions")); // Won't resize to fit data without this
+  if (currentRecipe !== {}) {
+    // Set values of all the main recipe fields
+    $("#title").val(currentRecipe.title);
+    $("#source").val(currentRecipe.source);
+    $("#public").val(currentRecipe.public);
+    $("#category1").val(currentRecipe.category1);
+    $("#category2").val(currentRecipe.category2);
+    $("#category3").val(currentRecipe.category3);
+    $("#recipe-desc").val(currentRecipe.description);
+    M.textareaAutoResize($("#recipe-desc")); // Won't resize to fit data without this
+    $("#prep-time").val(currentRecipe.prepTime);
+    $("#cook-time").val(currentRecipe.cookTime);
+    $("#num-servings").val(currentRecipe.numServings);
+    $("#instructions").val(currentRecipe.instructions);
+    M.textareaAutoResize($("#instructions")); // Won't resize to fit data without this
 
-  // Set oven temp based on if Imperial or Metric, set label, too
-  if (isImperial) {
-    $("#oven-temp").val(currentRecipe.ovenTempF);
-    $("#temp-label").text("Oven Temp (°F)");
-  }
-  else {
-    $("#oven-temp").val(currentRecipe.ovenTempC);
-    $("#temp-label").text("Oven Temp (°C)");
-  };
+    // Set oven temp based on if Imperial or Metric
+    if (isImperial) {
+      $("#oven-temp").val(currentRecipe.ovenTempF);
+    }
+    else {
+      $("#oven-temp").val(currentRecipe.ovenTempC);
+    };
 
-  // Retrieve ingredients for this recipe
-// TODO: Comment out just for testing  $.get("/api/ingredient_data:" + currentRecipe.id).then(function(data) {
-// TODO: Comment out just for testing    ingredientArray = data;
-
-    const buttonHtml = `<button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-      class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>`;
-    const ingredTable = $("#ingredient-body");
+    // Create a table row for each ingredient
+    const ingredTable = $("#ingredient-body")[0];
     let newRow;
     let qty;
     let unit;
 
-    // Create a table row for each ingredient
     ingredientArray.forEach(item => {
       // Get correct quantity and unit based on Imperial/Metric
       if (isImperial) {
@@ -273,37 +162,21 @@ function loadRecipeData() {
       newRow.append($("<td>").html(qty));
       newRow.append($("<td>").html(unit))
       newRow.append($("<td>").html(item.name));
-      newRow.append($("<td>").html(buttonHtml));
+      // Add Delete button if on Add/Update page only
+      if (currentPage === "add") {
+        newRow.append($("<td>").html(buttonHtml));
+      }
       ingredTable.append(newRow);
     })
-// TODO: Comment out just for testing  })
-// TODO: Comment out just for testing  .finally(function() {
-    // Add event handlers after elements have been created
-    $(".deleteBtn").click(deleteIngredient);
-    $("tr").click(editIngredient);
+
+    // Add event handlers after elements have been created, if on Add/Update page only
+    if (currentPage === "add") {
+      $(".deleteBtn").click(deleteIngredient);
+      $("tr").click(editIngredient);
+    };
+
     calculateNutrition();
-// TODO: Comment out just for testing  });
-};
-
-// Clear all fields
-function clearRecipeData(resetForm) {
-  // If not called from the Reset button on click handler, then need to reset form
-  if (resetForm) {
-    $(".recipe-form")[0].reset();
   };
-
-  // Clear globals
-// TODO: Comment out just for testing  currentRecipe = {};
-// TODO: Comment out just for testing  ingredientArray = [];
-
-  // Clear ingredient add/update form
-  $(".ingredient-form")[0].reset();
-
-  // Clear ingredient table
-  $("#ingredient-body").children().remove();
-
-  // Clear nutrition fields
-  calculateNutrition();
 };
 
 // Loop through all ingredients to calculate total nutrition info
@@ -417,3 +290,242 @@ function getFraction(decimal) {
     return fractionString;
   };
 };
+
+// *****************************
+// FUNCTIONS FOR ADD/UPDATE PAGE
+// *****************************
+// Save button click event - adds/updates recipe
+function saveRecipe(event) {
+  // Get data from main recipe fields
+  currentRecipe.title = $("#title").val();
+  currentRecipe.source = $("#source").val();
+  currentRecipe.public = $("#public").val();
+  currentRecipe.category1 = $("#category1").val();
+  currentRecipe.category2 = $("#category2").val();
+  currentRecipe.category3 = $("#category3").val();
+  currentRecipe.description = $("#recipe-desc").val();
+  currentRecipe.prepTime = $("#prep-time").val();
+  currentRecipe.cookTime = $("#cook-time").val();
+  currentRecipe.numServings = $("#num-servings").val();
+  currentRecipe.instructions = $("#instructions").val();
+  currentRecipe.userID = currentUser;
+
+  // Set oven temp based on if Imperial or Metric, convert for other setting
+  if (isImperial) {
+    currentRecipe.ovenTempF = $("#oven-temp").val();
+    currentRecipe.ovenTempC = Math.round((currentRecipe.ovenTempF - 32) * 5 / 9);
+  }
+  else {
+    currentRecipe.ovenTempC = $("#oven-temp").val();
+    currentRecipe.ovenTempF = Math.round((currentRecipe.ovenTempC / 5 * 9) + 32);
+  };
+
+  // Update existing recipe
+  if (currentRecipe.id) {
+    $.ajax({
+      method: "PUT",
+      url: "/api/recipe_data",
+      data: currentRecipe
+    })
+    .then(function() {
+      // TODO: Use something other than alert
+      alert("Recipe updated.");
+    })
+    .catch(function() {
+      // TODO: Use something other than alert
+      alert("Unable to update recipe.");
+    });
+  }
+  // Add new recipe
+  else {
+    $.post("/api/recipe_data", currentRecipe, function(data) {
+      currentRecipe.id = data;
+
+      // TODO: can't add new ingredients when creating new recipe, until recipe is saved
+      // Set recipeID for each ingredient
+      ingredientArray.forEach(item => {
+        item.recipeID = currentRecipe.id;
+      });
+
+      $.post("/api/ingredient_data", ingredientArray, function() {
+        loadRecipeData();
+        // TODO: Use something other than alert
+        alert("Recipe added!");
+      });
+    });
+  };
+};
+
+// Ingredient Save click event - adds/updates ingredient
+function saveIngredient(event) {
+
+  function convertImperialToMetric() {
+    // TODO:
+  };
+
+  function convertMetricToImperial() {
+    // TODO:
+  };
+
+  // Get pointer to ingredient table body
+  const ingredTable = $("#ingredient-body")[0];
+
+  // Retrieve the data from the input form
+  currentIngredient.name = $("#ingredient").val();
+
+  if (isImperial) {
+    currentIngredient.imperialQty = getDecimal($("#quantity").val());
+    currentIngredient.imperialUnit = $("#imperialUnit").val();
+    convertImperialToMetric();
+  }
+  else {
+    currentIngredient.metricQty = $("#quantity").val();
+    currentIngredient.metricUnit = $("#metricUnit").val();
+    convertMetricToImperial();
+  };
+
+  // TODO: Make api call to get nutrition info
+
+  currentIngredient.recipeID = currentRecipe.id;
+
+  // Determine if we are adding new ingredient or updating existing
+  if (currentIngredient.id) {
+    $.ajax({
+      method: "PUT",
+      url: "/api/ingredient_data",
+      data: currentIngredient
+    })
+    .then(function() {
+      // Get index of currentIngredient in ingredientArray to update table row
+      let arrayIndex = ingredientArray.findIndex(ingred => ingred.id === currentIngredient.id);
+      ingredientArray.splice(arrayIndex, 1, currentIngredient); // replace item in array
+      let tableRow = ingredTable.rows[arrayIndex + 1]; // add one because of header
+
+      if (isImperial) {
+        tableRow.cells[0].innerText = getFraction(currentIngredient.imperialQty);
+        tableRow.cells[1].innerText = currentIngredient.imperialUnit;
+      }
+      else {
+        tableRow.cells[0].innerText = currentIngredient.metricQty;
+        tableRow.cells[1].innerText = currentIngredient.metricUnit;
+      };
+      tableRow.cells[2].innerText = currentIngredient.name;
+    
+      calculateNutrition();
+    })
+    .catch(function(error) {
+      // TODO: use something other than alert
+      alert("Could not update ingredient. Error code " + error);
+    });
+  }
+  // Adding new ingredient
+  else {
+    $.post("/api/ingredient_data", currentIngredient, function(data) {
+      currentIngredient.id = data;
+      ingredientArray.push(currentIngredient); // Add new ingredient to array
+      
+      // Add new ingredient to table
+      let qty;
+      let unit;
+
+      if (isImperial) {
+        qty = getFraction(currentIngredient.imperialQty);
+        unit = currentIngredient.imperialUnit;
+      }
+      else {
+        qty = currentIngredient.metricQty;
+        unit = currentIngredient.metricUnit;
+      };
+
+      let newRow = $("<tr>");
+      newRow.append($("<td>").html(qty));
+      newRow.append($("<td>").html(unit))
+      newRow.append($("<td>").html(currentIngredient.name));
+      newRow.append($("<td>").html(buttonHtml));
+      ingredTable.append(newRow);
+
+      // Attach event handlers and recalcuate nutrition info
+      $(".deleteBtn").click(deleteIngredient);
+      $("tr").click(editIngredient);
+      calculateNutrition();
+    });
+  };
+};
+
+// Ingredient Delete click event - deletes selected ingredient
+function deleteIngredient(event) {  
+  const ingredIndex = this.parentNode.parentNode.rowIndex - 1; // subtract one because of header
+
+  // TODO: Use something other than confirm
+  if (confirm("Delete " + ingredientArray[ingredIndex].name + "?")) {
+    // Delete ingredient from database
+    $.ajax({
+      method: "DELETE",
+      url: "/api/ingredient/" + ingredIndex
+    })
+    .then(function() {
+      // Delete row from table
+      this.parentNode.parentNode.remove();
+      // Clear ingredient add/update form if it holds deleted ingredient
+      if (currentIngredient.id === ingredientArray[ingredIndex].id) {
+        $(".ingredient-form")[0].reset();
+        currentIngredient = {};
+      };
+      // Delete from ingredient array
+      ingredientArray.splice(ingredIndex, 1);
+      // Recalculate nutrition info
+      calculateNutrition();
+    })
+    .catch(function(error) {
+      // TODO: use something other than alert
+      alert("Could not delete ingredient. Error code " + error);
+    });
+  };
+};
+
+// Ingredient table row click event - edit ingredient
+function editIngredient(event) {
+  // Do nothing if they click on header row
+  if (this.rowIndex > 0) {
+    currentIngredient = ingredientArray[(this.rowIndex)-1]; // subtract one because of header
+
+    if (isImperial) {
+      $("#quantity").val(getFraction(currentIngredient.imperialQty));
+      $("#imperialUnit").val(currentIngredient.imperialUnit);
+      $("#imperialUnit").formSelect(); // Dropdown refresh
+    }
+    else {
+      $("#quantity").val(currentIngredient.metricQty);
+      $("#metricUnit").val(currentIngredient.metricUnit);
+      $("#metricUnit").formSelect(); // Dropdown refresh
+    };
+
+    $("#ingredient").val(currentIngredient.name);
+    M.updateTextFields(); // Labels won't move out of the way if you don't do this
+  };
+};
+
+// Reset button click event - clears all fields, including ingredients and nutrition info
+function resetForm(event) {
+  // Clear globals
+  currentRecipe = {};
+  currentIngredient = {};
+  ingredientArray = [];
+
+  // Clear ingredient add/update form
+  $(".ingredient-form")[0].reset();
+
+  // Clear ingredient table
+  $("#ingredient-body").children().remove();
+
+  // Clear nutrition fields
+  calculateNutrition();
+};
+
+// **************************
+// FUNCTIONS FOR PROFILE PAGE
+// **************************
+
+// *************************
+// FUNCTIONS FOR SEARCH PAGE
+// *************************
