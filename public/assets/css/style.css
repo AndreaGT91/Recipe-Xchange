@@ -14,8 +14,12 @@ button {
   margin-top: 20px;
 }
 
-.editBtn, .deleteBtn {
+.editBtn, .deleteBtn, .addBtn {
   margin-top: 0px;
+}
+
+h6 {
+  text-decoration: underline;
 }
 
 @media screen and (max-width: 400px) {

@@ -7,6 +7,11 @@ const url = window.location.search;
 let isImperial = true;
 let currentPage = "";
 let currentUser = {};
+// Html for delete and edit buttons
+const delButtonHtml = `<button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
+  class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>`;
+const editButtonHtml = `<button class="btn waves-effect waves-light teal darken-4 editBtn"><i
+  class="material-icons left">edit</i><span class="hide-on-small-only">Edit</span></button>`;
 
 // ******************
 // ADD/UPDATE GLOBALS
@@ -18,9 +23,6 @@ let currentIngredient = {};
 let ingredientArray = [];
 // Global to know if editing an existing ingredient or adding new one
 let editingIngredient = false;
-// Html for ingredient delete button
-const buttonHtml = `<button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-  class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>`;
 
 // ***********************
 // FUNCTIONS FOR ALL PAGES
@@ -158,7 +160,7 @@ function loadRecipeData() {
       newRow.append($("<td>").html(item.name));
       // Add Delete button if on Add/Update page only
       if (currentPage === "add") {
-        newRow.append($("<td>").html(buttonHtml));
+        newRow.append($("<td>").html(delButtonHtml));
       }
       ingredTable.append(newRow);
     });
@@ -407,7 +409,7 @@ function saveIngredient(event) {
     newRow.append($("<td>").html(qty));
     newRow.append($("<td>").html(unit))
     newRow.append($("<td>").html(currentIngredient.name));
-    newRow.append($("<td>").html(buttonHtml));
+    newRow.append($("<td>").html(delButtonHtml));
     ingredTable.append(newRow);
 
     // Attach event handlers, clear ingredient form, and recalcuate nutrition info
