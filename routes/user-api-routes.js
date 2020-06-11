@@ -3,11 +3,11 @@ const passport = require("../config/passport");
 
 module.exports = function (app) {
     app.post("/api/login", passport.authenticate("local"), function (req, res) {
-        res.json(req.user);
+        res.json(req.users);
     });
 
     app.post("/api/signup", function (req, res) {
-        db.User.create({
+        db.Users.create({
             email: req.body.email,
             password: req.body.password,
             firstName: req.body.firstName,
@@ -30,13 +30,35 @@ module.exports = function (app) {
     });
 
     app.get("/api/user_data", function (req, res) {
-        if (!req.user) {
+        if (!req.users) {
             res.json({});
         } else {
             res.json({
-                email: req.user.email,
-                id: req.user.id
+                email: req.users.email,
+                id: req.users.id
             });
         }
+    });
+
+    app.put("/api/user", function (req, res) {
+        db.Users.update(
+            req.body,
+            {
+                where: {
+                    id: req.body.id
+                }
+            }).then(function (dbUser) {
+                res.json(dbUser);
+            });
+    });
+
+    app.delete("/api/user/:id", function (req, res) {
+        db.Users.destroy({
+            where: {
+                id: req.params.id
+            }
+        }).then(function (dbUser) {
+            res.json(dbUser);
+        });
     });
 };
