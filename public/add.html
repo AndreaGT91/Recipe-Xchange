@@ -1,15 +1,16 @@
-<div class="row"> <!-- Main recipe properties -->
-  <form action="#" class="col s12">
+<div class="row">
+  <!-- Main recipe properties -->
+  <form action="#" class="col s12 recipe-form">
     <div class="row">
       <div class="col s2">
-        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action">Save<i
+        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="saveBtn">Save<i
             class="material-icons left">save_alt</i></button>
       </div>
       <div class="col s8">
         <h5 class="center">Add/Update Recipe</h5>
       </div>
       <div class="col s2">
-        <button class="btn waves-effect waves-light teal darken-4 right" type="reset">Reset<i
+        <button class="btn waves-effect waves-light teal darken-4 right" type="reset" id="resetBtn">Reset<i
             class="material-icons left">clear</i></button>
       </div>
     </div>
@@ -23,9 +24,23 @@
         <label for="source">Source</label>
       </div>
       <div class="input-field col s1">
-        <label><input type="checkbox" class="filled-in" checked="checked" /><span>Public</span></label>
+        <label><input id="public" type="checkbox" class="filled-in" checked="checked" /><span>Public</span></label>
       </div>
     </div> <!-- title/source row -->
+    <div class="row">
+      <div class="input-field col s12 m4">
+        <input id="category1" type="text" required>
+        <label for="category1">Category 1</label>
+      </div>
+      <div class="input-field col s12 m4">
+        <input id="category2" type="text">
+        <label for="category2">Category 2</label>
+      </div>
+      <div class="input-field col s12 m4">
+        <input id="category3" type="text">
+        <label for="category3">Category 3</label>
+      </div>
+    </div> <!-- category row -->
     <div class="row">
       <div class="input-field col s12">
         <textarea id="recipe-desc" class="materialize-textarea"></textarea>
@@ -35,15 +50,15 @@
     <div class="row">
       <div class="input-field col s6 m3">
         <input id="prep-time" type="text">
-        <label for="prep-time">Prep Time</label>
+        <label for="prep-time">Prep Time (minutes)</label>
       </div>
       <div class="input-field col s6 m3">
         <input id="cook-time" type="text">
-        <label for="cook-time">Cook Time</label>
+        <label for="cook-time">Cook Time (minutes)</label>
       </div>
       <div class="input-field col s6 m3">
         <input id="oven-temp" type="text">
-        <label for="oven-temp">Oven Temp</label>
+        <label for="oven-temp" id="temp-label">Oven Temp (°F)</label>
       </div>
       <div class="input-field col s6 m3">
         <input id="num-servings" type="text" required>
@@ -59,44 +74,53 @@
   </form> <!-- recipe form -->
 </div> <!-- main recipe properties -->
 
-<form action="#" class="row"> <!-- Add/Update Ingredient Form -->
-    <div class="input-field col s6 m2">
-      <input id="quantity" type="number" class="validate" required>
-      <label for="quantity">Quantity</label>
+<form action="#" class="row ingredient-form">
+  <!-- Add/Update Ingredient Form -->
+  <div class="input-field col s6 m2">
+    <input id="quantity" type="text" class="validate" pattern="\d+\s?\.?\d*\/?[1-9]*" required>
+    <label for="quantity">Quantity</label>
+  </div>
+  <div class="input-field col s6 m2" id="imperialUnit">  <!-- Default to not hidden -->
+    <select id="imperialUnit">
+      <option value="N/A" selected>N/A</option>
+      <option value="Oz">Oz</option>
+      <option value="Lb">Lb</option>
+      <option value="Tsp">Tsp</option>
+      <option value="Tbs">Tbs</option>
+      <option value="Cup">Cup</option>
+      <option value="Pt">Pt</option>
+      <option value="Qt">Qt</option>
+      <option value="Gal">Gal</option> -->
+    </select>
+    <label>Unit</label>
+  </div>
+  <div class="input-field col s6 m2" id="metricUnit" hidden>  <!-- Default to hidden -->
+    <select>
+      <option value="N/A" selected>N/A</option>
+      <option value="mL">mL</option>
+      <option value="L">L</option>
+      <option value="g">g</option>
+      <option value="kg">kg</option>
+    </select>
+    <label>Unit</label>
+  </div>
+  <div class="input-field col s10 m7">
+    <input id="ingredient" type="text" class="validate" required>
+    <label for="ingredient">Ingredient</label>
+  </div>
+  <div class="col s2 m1">
+    <div class="row">
+      <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="ingredBtn">Save<i
+          class="material-icons left">done</i></button>
+      <!-- <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="ingredBtn"><i -->
+          <!-- class="material-icons left">done</i><span class="hide-on-small-only">Save</span></button> -->
+      </button>
     </div>
-    <div class="input-field col s6 m2">
-      <select>
-        <option value="0" selected>N/A</option>
-        <option value="1">Oz</option>
-        <option value="2">Lb</option>
-        <option value="3">Tsp</option>
-        <option value="4">Tbs</option>
-        <option value="5">Cup</option>
-        <option value="6">Pt</option>
-        <option value="7">Qt</option>
-        <option value="8">Gal</option> -->
-    <!-- Metric options
-        <option value="1">mL</option>
-        <option value="2">L</option>
-        <option value="3">g</option>
-        <option value="4">kg</option> -->
-      </select>
-      <label>Unit</label>
-    </div>
-    <div class="input-field col s10 m7">
-      <input id="ingredient" type="text" class="validate" required>
-      <label for="ingredient">Ingredient</label>
-    </div>
-    <div class="col s2 m1">
-      <div class="row">
-        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action"><i
-          class="material-icons left">done</i><span class="hide-on-small-only">Save</span></button>
-        </button>
-      </div>
-    </div>
+  </div>
 </form> <!-- Add/Update ingredient form -->
 
-<div class="row"> <!-- Ingredient table -->
+<div class="row">
+  <!-- Ingredient table -->
   <table class="striped responsive-table">
     <thead>
       <tr>
@@ -106,53 +130,28 @@
         <th>Delete</th>
       </tr>
     </thead>
-    <tbody>
-      <tr>
-        <td>2</td>
-        <td>Cup</td>
-        <td>All-purpose flour</td>
-        <td>
-          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
-        </td>
-      </tr>
-      <tr>
-        <td>3/4</td>
-        <td>Cup</td>
-        <td>Sugar</td>
-        <td>
-          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
-        </td>
-      </tr>
-      <tr>
-        <td>1/2</td>
-        <td>Cup</td>
-        <td>Butter, softened</td>
-        <td>
-          <button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
-              class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>
-        </td>
-      </tr>
+    <tbody id="ingredient-body">
+      <!-- Table rows added in javascript -->
     </tbody>
   </table>
 </div> <!-- ingredient table row -->
 
-<div class="row"> <!-- Nutrition Information -->
+<div class="row nutrition-group">
+  <!-- Nutrition Information -->
   <div class="input-field col s6 m3">
-    <input disabled id="calories" type="text">
+    <input disabled type="text" id="calories">
     <label for="calories">Calories Per Serving</label>
   </div>
   <div class="input-field col s6 m3">
-    <input disabled id="protein" type="text">
+    <input disabled type="text" id="protein">
     <label for="protein">Protein (g)</label>
   </div>
   <div class="input-field col s6 m3">
-    <input disabled id="carbohydrate" type="text">
-    <label for="carbohydrate">Carbohydrates (g)</label>
+    <input disabled type="text" id="carbohydrates">
+    <label for="carbohydrates">Carbohydrates (g)</label>
   </div>
   <div class="input-field col s6 m3">
-    <input disabled id="fat" type="text">
+    <input disabled type="text" id="fat">
     <label for="fat">Fat (g)</label>
   </div>
 </div> <!-- nutrition row -->
