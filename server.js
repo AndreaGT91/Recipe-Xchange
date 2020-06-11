@@ -17,6 +17,7 @@ require("./routes/html-routes.js")(app);
 require("./routes/user-api-routes.js")(app);
 require("./routes/recipe-api-routes.js")(app);
 require("./routes/ingredients-api-routes.js")(app);
+require("./routes/categories-api-routes.js")(app);
 
 db.sequelize.sync().then(function () {
     console.log(`PID: ${pid}\n`);
