@@ -358,35 +358,87 @@ function saveRecipe(event) {
 
 // Ingredient Save click event - adds/updates ingredient
 function saveIngredient(event) {
-
-  function convertImperialToMetric() {
-    // TODO:
-  };
-
-  function convertMetricToImperial() {
-    // TODO:
-  };
-
+  const spoonacularApiKey = "6572c1d2e7734a0385d6e5765993d8ca"; // TODO: Move to server side to protect key
+  const apiGetIngredInfo = `https://api.spoonacular.com/recipes/parseIngredients
+    ?apiKey=${spoonacularApiKey}&includeNutrition=true&ingredientList=`;
+ 
   // Get pointer to ingredient table body
   const ingredTable = $("#ingredient-body")[0];
 
-  // Retrieve the data from the input form
-  currentIngredient.name = $("#ingredient").val();
+  // Retrieve the name from the input form and set recipeID
+  let ingredList = currentIngredient.name = $("#ingredient").val();
+  currentIngredient.recipeID = currentRecipe.id;
 
+  // Instantiate variables for API call
+  let sourceAmount;
+  let sourceUnit;
+  let targetUnit;
+
+  // Retrieve the quantity and amount, set appropriate values
   if (isImperial) {
-    currentIngredient.imperialQty = getDecimal($("#quantity").val());
-    currentIngredient.imperialUnit = $("#imperialUnit").val();
-    convertImperialToMetric();
+    sourceAmount = currentIngredient.imperialQty = getDecimal($("#quantity").val());
+    sourceUnit = currentIngredient.imperialUnit = $("#imperialUnit").val();
+    ingredList = currentIngredient.imperialQty + " " + currentIngredient.imperialUnit + " " + ingredList;
+    targetUnit = "grams";
   }
   else {
-    currentIngredient.metricQty = $("#quantity").val();
-    currentIngredient.metricUnit = $("#metricUnit").val();
-    convertMetricToImperial();
+    sourceAmount = currentIngredient.metricQty = $("#quantity").val();
+    sourceUnit = currentIngredient.metricUnit = $("#metricUnit").val();
+    ingredList = currentIngredient.metricQty + " " + currentIngredient.metricUnit + " " + ingredList;
+    // TODO: Would be nice to determine target unit more precisely, i.e. tsp, tbl, cup, etc.
+    targetUnit = "cups";
   };
 
-  // TODO: Make api call to get nutrition info
+  const apiGetConversion = `https://api.spoonacular.com/recipes/convert?apiKey=${spoonacularApiKey}
+    &ingredientName=${currentIngredient.name}&sourceAmount=${sourceAmount}&sourceUnit=${sourceUnit}
+    &targetUnit=${targetUnit}`;
 
-  currentIngredient.recipeID = currentRecipe.id;
+  // First, do call to get ingredient information
+  $.ajax({
+    url: apiGetIngredInfo + ingredList,
+    method: "POST"
+  })
+  .then(function (response) {
+    // Then, retrieve all the nutrition info
+    const nutrients = response[0].nutrition.nutrients; // array of nutrient info
+    // "title": "Calories"
+    // "title": "Fat"
+    // "title": "Carbohydrates"
+    // "title": "Protein"
+    // currentIngredient.calories = 
+    // currentIngredient.protein =
+    // currentIngredient.carbs =
+    // currentIngredient.fat =
+
+    // Finally, do call to get imperial/metric conversion
+    $.ajax({
+      url: apiGetConversion,
+      method: "GET"
+    })
+    .then(function (res) {
+      // Set quantity/unit fields with converted data
+      if (isImperial) {
+        currentIngredient.metricQty = res.targetAmount;
+        currentIngredient.metricUnit = res.targetUnit;
+      }
+      else {
+        currentIngredient.imperialQty = res.targetAmount;
+        currentIngredient.imperialUnit = res.targetUnit;
+      };
+
+      // TODO: Actual save
+    })
+    .catch(function (err) {
+      // TODO: Use something other than alert
+      alert("Could not retrieve conversion information. Error code ", err);
+    });
+  
+  })
+  .catch(function (error) {
+    // TODO: Use something other than alert
+    alert("Could not retrieve nutrition information. Error code ", error);
+  });
+
 
   // Determine if we are adding new ingredient or updating existing
   if (currentIngredient.id) {
