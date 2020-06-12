@@ -23,6 +23,8 @@ let currentIngredient = {};
 let ingredientArray = [];
 // Global to know if editing an existing ingredient or adding new one
 let editingIngredient = false;
+// Category list
+let categoryList = {};
 
 // ***********************
 // FUNCTIONS FOR ALL PAGES
@@ -77,6 +79,18 @@ $(document).ready(function() {
           $("#resetBtn").click(resetForm);
           $("#ingredBtn").click(saveIngredient);
 
+          // Retrieve list of categories
+          $.get("/api/categories", function(data) {
+            data.forEach(item => {
+              categoryList[item.name] = null;
+              // categoryList[item.name] = item.id;
+            });
+
+            $("input.autocomplete").autocomplete({
+              data: categoryList
+            });
+          });
+
           // If recipeID is -1, then we just need blank page; otherwise, get recipe data
           if (recipeID !== -1) {
             $.get("/api/recipe_data/" + recipeID, function(data) {
@@ -89,6 +103,10 @@ $(document).ready(function() {
     });
   };
 });
+
+function categoryAutocomplete() {
+  console.log("in autocomplete");
+};
 
 // Imperial/Metric toggle on click event
 function toggleUnits() {
