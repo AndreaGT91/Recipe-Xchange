@@ -85,7 +85,8 @@
     <input id="quantity" type="text" class="validate" pattern="\d+\s?\.?\d*\/?[1-9]*" required>
     <label for="quantity">Quantity</label>
   </div>
-  <div class="input-field col s6 m2" id="imperialUnit">  <!-- Default to not hidden -->
+
+  <div class="input-field col s6 m2" id="imperialUnitDiv"> <!-- Default to not hidden -->
     <select id="imperialUnit">
       <option value="" selected></option>
       <option value="Oz">Oz</option>
@@ -97,17 +98,17 @@
       <option value="Qt">Qt</option>
       <option value="Gal">Gal</option> -->
     </select>
-    <label>Unit</label>
+    <label for="imperialUnit">Unit</label>
   </div>
-  <div class="input-field col s6 m2" id="metricUnit" hidden>  <!-- Default to hidden -->
-    <select>
+  <div class="input-field col s6 m2" id="metricUnitDiv" hidden> <!-- Default to hidden -->
+    <select id="metricUnit">
       <option value="" selected></option>
       <option value="mL">mL</option>
       <option value="L">L</option>
       <option value="g">g</option>
       <option value="kg">kg</option>
     </select>
-    <label>Unit</label>
+    <label for="metricUnit">Unit</label>
   </div>
   <div class="input-field col s10 m7">
     <input id="ingredient" type="text" class="validate" required>
@@ -118,7 +119,7 @@
       <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="ingredBtn">Save<i
           class="material-icons left">done</i></button>
       <!-- <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="ingredBtn"><i -->
-          <!-- class="material-icons left">done</i><span class="hide-on-small-only">Save</span></button> -->
+      <!-- class="material-icons left">done</i><span class="hide-on-small-only">Save</span></button> -->
       </button>
     </div>
   </div>
@@ -145,7 +146,7 @@
   <!-- Nutrition Information -->
   <div class="input-field col s6 m3">
     <input disabled type="text" id="calories">
-    <label for="calories">Calories Per Serving</label>
+    <label for="calories">Calories</label>
   </div>
   <div class="input-field col s6 m3">
     <input disabled type="text" id="protein">
