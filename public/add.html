@@ -28,32 +28,22 @@
       </div>
     </div> <!-- title/source row -->
     <div class="row">
-      <div class="col s12 m4">
-        <div class="row">
-          <div class="input-field col s12">
-            <i class="material-icons prefix">arrow_drop_down</i>
-            <input type="text" id="category1" class="autocomplete">
-            <label for="category1">Category 1</label>
-          </div>
-        </div>
+      <div class="input-field col s12 m4">
+        <label for="category1">Category 1</label>
+        <datalist id="category_list">
+          <select id="categories">
+            <!-- Options loaded in javascript -->
+          </select>
+        </datalist>
+        <input type="text" name="category1" class="capitalize" id="category1" list="category_list"></input>
       </div>
-      <div class="col s12 m4">
-        <div class="row">
-          <div class="input-field col s12">
-            <i class="material-icons prefix">arrow_drop_down</i>
-            <input type="text" id="category2" class="autocomplete">
-            <label for="category2">Category 2</label>
-          </div>
-        </div>
+      <div class="input-field col s12 m4">
+        <label for="category2">Category 2</label>
+        <input type="text" name="category2" class="capitalize" id="category2" list="category_list"></input>
       </div>
-      <div class="col s12 m4">
-        <div class="row">
-          <div class="input-field col s12">
-            <i class="material-icons prefix">arrow_drop_down</i>
-            <input type="text" id="category3" class="autocomplete">
-            <label for="category3">Category 3</label>
-          </div>
-        </div>
+      <div class="input-field col s12 m4">
+        <label for="category3">Category 3</label>
+        <input type="text" name="category3" class="capitalize" id="category3" list="category_list"></input>
       </div>
     </div> <!-- category row -->
     <div class="row">

@@ -23,8 +23,6 @@ let currentIngredient = {};
 let ingredientArray = [];
 // Global to know if editing an existing ingredient or adding new one
 let editingIngredient = false;
-// Category list
-let categoryList = {};
 
 // ***********************
 // FUNCTIONS FOR ALL PAGES
@@ -80,14 +78,16 @@ $(document).ready(function() {
           $("#ingredBtn").click(saveIngredient);
 
           // Retrieve list of categories
+          let newOption;
+          const categoryList = $("#category_list"); // Use datalist, not select, to get down arrows
+
           $.get("/api/categories", function(data) {
             data.forEach(item => {
-              categoryList[item.name] = null;
-              // categoryList[item.name] = item.id;
-            });
-
-            $("input.autocomplete").autocomplete({
-              data: categoryList
+              newOption = $("<option>");
+              newOption.data("value", item.id); // data-value is category id and is hidden
+              newOption.val(item.name); // value is category name and is displayed
+              newOption.attr("id", item.name); // used to find option later when saving recipe
+              categoryList.append(newOption);
             });
           });
 
@@ -103,10 +103,6 @@ $(document).ready(function() {
     });
   };
 });
-
-function categoryAutocomplete() {
-  console.log("in autocomplete");
-};
 
 // Imperial/Metric toggle on click event
 function toggleUnits() {
@@ -136,9 +132,10 @@ function loadRecipeData() {
     $("#title").val(currentRecipe.title);
     $("#source").val(currentRecipe.source);
     $("#public").val(currentRecipe.public);
-    $("#category1").val(currentRecipe.category1);
-    $("#category2").val(currentRecipe.category2);
-    $("#category3").val(currentRecipe.category3);
+    // TODO: Will setting cateogry data-value update the display???
+    $("#category1").data("value") = currentRecipe.category1;
+    $("#category2").data("value") = currentRecipe.category2;
+    $("#category3").data("value") = currentRecipe.category3;
     $("#recipe-desc").val(currentRecipe.description);
     M.textareaAutoResize($("#recipe-desc")); // Won't resize to fit data without this
     $("#prep-time").val(currentRecipe.prepTime);
@@ -316,13 +313,41 @@ function getFraction(decimal) {
 // *****************************
 // Save button click event - adds/updates recipe
 function saveRecipe(event) {
+
+  // Function to handle categories
+  function getCategory(categoryName) {
+    let catName = categoryName.trim();
+    if (catName === "") {
+      return null
+    }
+    else {
+      // Capitalize first letter of each word, lowercase the rest
+      let catList = catName.split(" ");
+      for (let i=0; i<catList.length; i++) {
+        catList[i] = catList[i][0].toUpperCase() + catList[i].substr(1).toLowerCase();
+      };
+      catName = catList.join(" ");
+
+      let catOption = $("#" + catName);
+
+      // If an element is found whose ID is the category name, then the cateogory already exists - return its ID
+      if (catOption.length > 0) {
+        return catOption.data("value")
+      }
+      else {
+        console.log("Add new category ", catName);
+        return null
+      }
+    };
+  };
+
   // Get data from main recipe fields
   currentRecipe.title = $("#title").val();
   currentRecipe.source = $("#source").val();
+  currentRecipe.category1 = getCategory($("#category1").val());
+  currentRecipe.category2 = getCategory($("#category2").val());
+  currentRecipe.category3 = getCategory($("#category3").val());
   currentRecipe.public = $("#public").val();
-  currentRecipe.category1 = $("#category1").val();
-  currentRecipe.category2 = $("#category2").val();
-  currentRecipe.category3 = $("#category3").val();
   currentRecipe.description = $("#recipe-desc").val();
   currentRecipe.prepTime = $("#prep-time").val();
   currentRecipe.cookTime = $("#cook-time").val();
