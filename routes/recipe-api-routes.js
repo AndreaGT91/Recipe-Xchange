@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Op } = require("sequelize")
 
 module.exports = function (app) {
     app.get("/api/recipes", function (req, res) {
@@ -7,11 +8,45 @@ module.exports = function (app) {
         });
     });
 
+    app.get("/api/recipesByCategory/:category", function (req, res) {
+        db.Categories.findAll({
+            where: {
+                name: req.params.category
+              },
+              include: [db.Recipes]
+        }).then(function (dbRecipes) {
+            res.json(dbRecipes)
+        });
+    });
+
+    app.get("/api/recipesByIngredient/:ingredient", function (req, res) {
+        db.Ingredients.findAll({
+            where: {
+                name: req.params.ingredient
+              },
+              include: [db.Recipes]
+        }).then(function (dbRecipes) {
+            res.json(dbRecipes)
+        });
+    });
+
+    app.get("/api/recipesByTitle/:title", function (req, res) {
+        db.Recipes.findAll({
+            where: {
+                title: {
+                    [Op.like]: "%" + req.params.title + "%"
+                }
+            }
+        }).then(function (dbRecipes) {
+            res.json(dbRecipes)
+        });
+    });
+
     app.get("/api/recipes/:id", function (req, res) {
         db.Recipes.findOne({
             where: {
                 id: req.params.id
-            }
+            },
         }).then(function (dbRecipe) {
             res.json(dbRecipe);
         });
@@ -32,7 +67,8 @@ module.exports = function (app) {
             category2: req.body.category2,
             category3: req.body.category3,
             public: req.body.public,
-            UserId: req.body.UserId
+            UserId: req.body.UserId,
+            CategoryId: req.body.CategoryId
         })
             .then(function (dbRecipe) {
                 res.json(dbRecipe)

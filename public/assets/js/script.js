@@ -46,6 +46,7 @@ $(document).ready(function() {
       currentPage = "search";
       globalSetup();
       toggleUnits();
+      getCategories();
     });
   }
   // If we do have user_id, then we need either Profile or Add/Update pages
@@ -623,3 +624,38 @@ function resetForm(event) {
 // *************************
 // FUNCTIONS FOR SEARCH PAGE
 // *************************
+
+function getCategories() {
+  $('select').formSelect();
+  $('.categoriesOptions').on('contentChanged', function () {
+    $(this).formSelect();
+  });
+
+  $.get("/api/categories", function (data) {
+    for (let i = 0; i < data.length; i++) {
+      let newOption = $(`<option value="${i}">${data[i].name}</option>`)
+      $(".categoriesOptions").append(newOption)
+      console.log(data[i].name)
+    }
+    $('.categoriesOptions').trigger('contentChanged');
+  });
+}
+
+function getRecipeByCategory(category) {
+  $.get(`api/recipesByCategory/${category}`, function (data) {
+    // returns recipes
+  })
+}
+
+function getRecipeByIngredient(ingredient) {
+  $.get(`api/recipesByIngredient/${ingredient}`, function (data) {
+    // returns recipes
+  })
+}
+
+function getRecipeByTitle(title) {
+  $.get(`api/recipesbytitle/${title}`, function (data) {
+    // returns recipes
+  })
+}
+
