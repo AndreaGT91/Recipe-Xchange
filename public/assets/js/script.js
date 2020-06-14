@@ -217,7 +217,7 @@ function loadRecipeData() {
 // Loop through all ingredients to calculate total nutrition info
 function calculateNutrition(numServings) {
   // Validate numServings
-  if ((isNaN(numServings)) || (numServings = 0)) {
+  if ((isNaN(numServings)) || (numServings === 0)) {
     numServ = 1
   }
   else {
