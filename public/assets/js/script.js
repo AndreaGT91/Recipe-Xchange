@@ -95,7 +95,11 @@ $(document).ready(function() {
           if (RecipeId !== -1) {
             $.get("/api/recipes/" + RecipeId, function(data) {
               currentRecipe = data;
-              toggleUnits();
+              // Get its ingredients, too
+              $.get("/api/ingredients/" + RecipeId, function(result) {
+                ingredientArray = result;
+                toggleUnits();
+              });
             });
           };
         });
@@ -172,13 +176,12 @@ function loadRecipeData() {
     };
 
     // Create a table row for each ingredient
-    const ingredTable = $("#ingredient-body")[0];
-    console.log("ingredTable ", ingredTable)
+    const ingredTable = $("#ingredient-body");
+    ingredTable.empty(); // Not sure why this is necessary, but there seemed to be objects attached at load
     let newRow;
     let qty;
     let unit;
 
-    console.log("Ingredient array ", ingredientArray);
     ingredientArray.forEach(item => {
       // Get correct quantity and unit based on Imperial/Metric
       if (isImperial) {
@@ -198,7 +201,6 @@ function loadRecipeData() {
       if (currentPage === "add") {
         newRow.append($("<td>").html(delButtonHtml));
       }
-      console.log("newRow ", newRow);
       ingredTable.append(newRow);
     });
 
@@ -473,7 +475,7 @@ function saveIngredient(event) {
   event.preventDefault();
 
   // Get pointer to ingredient table body
-  const ingredTable = $("#ingredient-body")[0];
+  const ingredTable = $("#ingredient-body");
 
   // Everything that needs to be done to update existing ingredient, except for updating database
   function updateIngredient() {
@@ -483,7 +485,7 @@ function saveIngredient(event) {
     // Index should be found since we are updating existing ingredient, but check anyway
     if (arrayIndex >= 0) {
       ingredientArray.splice(arrayIndex, 1, currentIngredient); // replace item in array
-      let tableRow = ingredTable.rows[arrayIndex + 1]; // add one because of header
+      let tableRow = ingredTable[0].rows[arrayIndex];
 
       if (isImperial) {
         tableRow.cells[0].innerText = getFraction(currentIngredient.imperialQty);
@@ -535,6 +537,7 @@ function saveIngredient(event) {
     calculateNutrition(getInteger($("#num-servings").val()));
   };
 
+  // Main body of saveIngredient
   const spoonacularApiKey = "6572c1d2e7734a0385d6e5765993d8ca"; // TODO: Move to server side to protect key
   const apiGetIngredInfo = `https://api.spoonacular.com/recipes/parseIngredients` +
     `?apiKey=${spoonacularApiKey}&includeNutrition=true&ingredientList=`;
@@ -653,18 +656,21 @@ function saveIngredient(event) {
 
 // Ingredient Delete click event - deletes selected ingredient
 function deleteIngredient(event) {  
-  const ingredIndex = this.parentNode.parentNode.rowIndex - 1; // subtract one because of header
+  event.stopPropagation(); // Don't want row click event handle called
+
+  const ingredRow = this.parentNode.parentNode;
+  const ingredIndex = ingredRow.rowIndex - 1; // subtract one because of header
 
   // TODO: Use something other than confirm
   if (confirm("Delete " + ingredientArray[ingredIndex].name + "?")) {
     // Delete ingredient from database
     $.ajax({
       method: "DELETE",
-      url: "/api/ingredients/" + ingredIndex 
+      url: "/api/ingredients/" + ingredientArray[ingredIndex].id
     })
     .done(function() {
       // Delete row from table
-      this.parentNode.parentNode.remove();
+      ingredRow.remove();
       // Clear ingredient add/update form if it holds deleted ingredient
       if (currentIngredient.id === ingredientArray[ingredIndex].id) {
         $(".ingredient-form")[0].reset();
@@ -716,7 +722,7 @@ function resetForm(event) {
   $(".ingredient-form")[0].reset();
 
   // Clear ingredient table
-  $("#ingredient-body").children().remove();
+  $("#ingredient-body").empty();
 
   // Clear nutrition fields
   calculateNutrition(1);

@@ -1,8 +1,12 @@
 const db = require("../models");
 
 module.exports = function (app) {
-    app.get("/api/ingredients", function (req, res) {
-        db.Ingredients.findAll({}).then(function (dbIngredients) {
+    app.get("/api/ingredients/:id", function (req, res) {
+        db.Ingredients.findAll({
+          where: {
+            RecipeId: req.params.id
+          }
+        }).then(function (dbIngredients) {
             res.json(dbIngredients);
         });
     });
