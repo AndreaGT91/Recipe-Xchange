@@ -85,23 +85,24 @@ $(document).ready(function() {
             data.forEach(item => {
               newOption = $("<option>");
               newOption.data("value", item.id); // data-value is category id and is hidden
+              newOption.attr("name", item.id); // name is also id and hidden
               newOption.val(item.name); // value is category name and is displayed
               newOption.attr("id", item.name); // used to find option later when saving recipe
               categoryList.append(newOption);
+
+              // If RecipeId is -1, then we just need blank page; otherwise, get recipe data
+              if (RecipeId !== -1) {
+                $.get("/api/recipes/" + RecipeId, function(data) {
+                  currentRecipe = data;
+                  // Get its ingredients, too
+                  $.get("/api/ingredients/" + RecipeId, function(result) {
+                    ingredientArray = result;
+                    toggleUnits();
+                  });
+                });
+              };
             });
           });
-
-          // If RecipeId is -1, then we just need blank page; otherwise, get recipe data
-          if (RecipeId !== -1) {
-            $.get("/api/recipes/" + RecipeId, function(data) {
-              currentRecipe = data;
-              // Get its ingredients, too
-              $.get("/api/ingredients/" + RecipeId, function(result) {
-                ingredientArray = result;
-                toggleUnits();
-              });
-            });
-          };
         });
       };
     });
@@ -146,19 +147,28 @@ function toggleUnits() {
 
 // Load the currentRecipe object and ingredients array into the data fields
 function loadRecipeData() {
+
+  // Sets each category field
+  function setCategory(catNum, catID) {
+    let catOption = $(`option[name="${catID}"`); //  <option> element for that category ID
+    let catField = $(`#${catNum}`); // <input> element for current category
+
+    // Make sure we found the option element before setting input element
+    if (catOption.length > 0) {
+      catField.val(catOption[0].value);
+      catField.select();
+    };
+  };
+
+  // Main loadRecipeData function
   if (currentRecipe !== {}) {
     // Set values of all the main recipe fields
     $("#title").val(currentRecipe.title);
     $("#source").val(currentRecipe.source);
     $("#public").val(currentRecipe.public);
-    // TODO: Will setting cateogry data-value update the display???
-    // console.log($("#category1"));
-    // console.log($("#category1").data());
-    // console.log($("#category1").data("value"));
-    // console.log(currentRecipe.category1);
-    // $("#category1").data("value") = currentRecipe.category1;
-    // $("#category2").data("value") = currentRecipe.category2;
-    // $("#category3").data("value") = currentRecipe.category3;
+    setCategory("category1", currentRecipe.category1);
+    setCategory("category2", currentRecipe.category2);
+    setCategory("category3", currentRecipe.category3);
     $("#recipe-desc").val(currentRecipe.description);
     M.textareaAutoResize($("#recipe-desc")); // Won't resize to fit data without this
     $("#prep-time").val(currentRecipe.prepTime);
@@ -238,6 +248,7 @@ function calculateNutrition(numServings) {
     fat += item.fat;
   });
 
+  // Nutrition info is per serving
   calories /= numServ;
   protein /= numServ;
   carbohydrates /= numServ;
@@ -366,6 +377,7 @@ function saveRecipe(event) {
       };
       catName = catList.join(" ");
 
+      // getElementById returns null if not found, but jQuery always returns something, but length will be zero
       let catOption = $("#" + catName);
 
       // If an element is found whose ID is the category name, then the cateogory already exists - return its ID
@@ -373,8 +385,18 @@ function saveRecipe(event) {
         return catOption.data("value")
       }
       else {
-        $.post("/api/addcategory", catName)
+        $.post("/api/addcategory", {
+          name: catName
+        })
         .done(function(data) {
+          // Add new category to category_list
+          let newOption = $("<option>");
+          newOption.data("value", data.id); // data-value is category id and is hidden
+          newOption.attr("name", data.id); // name is also id and hidden
+          newOption.val(catName); // value is category name and is displayed
+          newOption.attr("id", catName); // used to find option later when saving recipe
+          $("#category_list").append(newOption);
+
           return data.id
         })
         .fail(function(error) {
