@@ -107,7 +107,7 @@ $(document).ready(function() {
       };
     });
   };
-});
+}); // End of document ready function
 
 function showPopup() {
   document.getElementById("loginPopup").style.display = "block";
