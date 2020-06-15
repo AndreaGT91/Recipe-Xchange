@@ -48,7 +48,6 @@ $(document).ready(function () {
       globalSetup();
       toggleUnits();
       getCategories();
-      $('.carousel').carousel();
     });
   }
   // If we do have user_id, then we need either Profile or Add/Update pages
