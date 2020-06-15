@@ -1149,7 +1149,6 @@ $(document).on("click", "#nextBtn", function (event) {
     currentIndex++
   }
 
-  console.log("Index: " + currentIndex)
   updateSearchDom(currentIndex)
 
   return currentIndex;

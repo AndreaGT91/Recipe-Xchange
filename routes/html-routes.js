@@ -3,15 +3,15 @@ const passport = require("passport")
 
 module.exports = function (app) {
   app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+    res.sendFile(path.join(__dirname, "../views/index.html"));
   });
 
   app.get("/profile/:id", function (req, res) {
-    res.sendFile(path.join(__dirname, `../public/index.html/?user_id=${req.params.id}`));
+    res.sendFile(path.join(__dirname, `../views/index.html/?user_id=${req.params.id}`));
   })
 
   app.get("/search", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+    res.sendFile(path.join(__dirname, "../views/index.html"));
   })
 
   app.post("/login",
