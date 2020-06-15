@@ -63,7 +63,12 @@ $(document).ready(function () {
         $("#main-content").load("profile.html", function () {
           currentPage = "profile";
           globalSetup();
-          // TODO:           loadUserData();
+
+          // These are just for the Manage Profile page
+          $("#saveUserBtn").click(saveUser);
+          $("#cancelBtn").click(cancelChanges);
+          $(".addBtn").click(addRecipe);
+          loadUserData();
         });
       }
       // If we do have recipe_id, then load Add/Update page
@@ -751,6 +756,59 @@ function resetForm(event) {
 // **************************
 // FUNCTIONS FOR PROFILE PAGE
 // **************************
+
+// On click for Save button on Profile page
+function saveUser(event) {
+  event.preventDefault();
+
+  // Email and password are validated and set on change; don't need to update here; ID set on load
+  currentUser.firstName = $("#first-name").val();
+  currentUser.lastName = $("#last-name").val();
+  currentUser.location = $("#location").val();
+  currentUser.aboutMe = $("#about-me").val();
+  currentUser.imperial = $("#imperial")[0].checked;
+
+  $.ajax({
+    method: "PUT",
+    url: "/api/user",
+    data: currentUser
+  })
+  .done(function() {
+    // TODO: Use something other than alert
+    alert("Profile updated.");
+  })
+  .fail(function() {
+    // TODO: Use something other than alert
+    alert("Unable to update profile.");
+  });
+};
+
+// On click for Cancel button on Profile page
+function cancelChanges() {
+
+};
+
+// On click for Add Recipe button on Profile page
+function addRecipe() {
+
+};
+
+// Function that loads user's information on Profile page
+function loadUserData() {
+  // Email and password are validated and set on change; don't need to update here; ID set on load
+  $("#username").val(currentUser.email);
+  $("#current-password").val(currentUser.password);
+  $("#new-password").val(currentUser.password);
+
+  $("#first-name").val(currentUser.firstName);
+  $("#last-name").val(currentUser.lastName);
+  $("#location").val(currentUser.location);
+  $("#about-me").val(currentUser.aboutMe);
+  isImperial = $("#imperial")[0].checked = currentUser.imperial;
+
+  M.updateTextFields(); // Labels won't move out of the way if you don't do this
+  M.textareaAutoResize($("#about-me")); // Won't resize to fit data without this
+};
 
 // *************************
 // FUNCTIONS FOR SEARCH PAGE
