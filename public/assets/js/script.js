@@ -1,6 +1,7 @@
 // *********************
 // GLOBALS FOR ALL PAGES
 // *********************
+
 // Need URL to determine which page to load, and which data
 const url = window.location.search;
 // Need to know if using Imperial or Metric Units; default to Imperial because we are AMERICANS!
@@ -29,7 +30,7 @@ let editingIngredient = false;
 // ***********************
 // Once DOM is full loaded, add in the appropriate page definition
 // Use its callback to load the rest of the event handlers.
-$(document).ready(function() {
+$(document).ready(function () {
 
   // These are needed for every page
   function globalSetup() {
@@ -40,10 +41,11 @@ $(document).ready(function() {
 
   // If ?user_id not in URL, then we need search page
   if (url.indexOf("?user_id=") === -1) {
-    $("#main-content").load("search.html", function() {
+    $("#main-content").load("search.html", function () {
       currentPage = "search";
       globalSetup();
       toggleUnits();
+      getCategories();
     });
   }
   // If we do have user_id, then we need either Profile or Add/Update pages
@@ -58,17 +60,17 @@ $(document).ready(function() {
 
       // If ?recipe_id not in URL, then we need Profile page
       if (url.indexOf("?recipe_id=") === -1) {
-        $("#main-content").load("profile.html", function(){
+        $("#main-content").load("profile.html", function () {
           currentPage = "profile";
           globalSetup();
-// TODO:           loadUserData();
+          // TODO:           loadUserData();
         });
       }
       // If we do have recipe_id, then load Add/Update page
       else {
         let RecipeId = parseInt(urlArray[2]); // Will be last of 3 sections of URL
 
-        $("#main-content").load("add.html", function() {
+        $("#main-content").load("add.html", function () {
           currentPage = "add";
           globalSetup();
 
@@ -255,10 +257,10 @@ function calculateNutrition(numServings) {
   fat /= numServ;
 
   // Update display fields
-  $("#calories").val(calories); 
-  $("#protein").val(protein); 
-  $("#carbohydrates").val(carbohydrates); 
-  $("#fat").val(fat); 
+  $("#calories").val(calories);
+  $("#protein").val(protein);
+  $("#carbohydrates").val(carbohydrates);
+  $("#fat").val(fat);
   M.updateTextFields(); // Labels won't move out of the way if you don't do this
 };
 
@@ -273,7 +275,7 @@ function getDecimal(number) {
     let denominator = 1;
 
     let nums = number.split("/");
-    let leftSide = nums[0].split(" ",2);
+    let leftSide = nums[0].split(" ", 2);
 
     // If nums length is 1, then there was no slash. 
     // If, for some reason, there is more than one slash, just ignore anything beyond the first
@@ -519,7 +521,7 @@ function saveIngredient(event) {
       };
       tableRow.cells[2].innerText = currentIngredient.name;
     };
-      
+
     // Clear ingredient form and recalcuate nutrition info
     $(".ingredient-form")[0].reset();
     currentIngredient = {};
@@ -530,7 +532,7 @@ function saveIngredient(event) {
   // Everything that needs to be done to add a new ingredient, except for updating database
   function addIngredient() {
     ingredientArray.push(currentIngredient); // Add new ingredient to array
-          
+
     // Add new ingredient to table
     let qty;
     let unit;
@@ -659,11 +661,6 @@ function saveIngredient(event) {
           // TODO: Use something other than alert
           alert("Could not add ingredient. Error code ", error);
         });
-      }
-      // Adding new ingredient to new recipe, so we don't save ingredient in database until recipe saved
-      else {
-        addIngredient();
-      };
     })
     .fail(function (error) {
       // TODO: Use something other than alert
@@ -714,7 +711,7 @@ function deleteIngredient(event) {
 function editIngredient(event) {
   // Do nothing if they click on header row
   if (this.rowIndex > 0) {
-    currentIngredient = ingredientArray[(this.rowIndex)-1]; // subtract one because of header
+    currentIngredient = ingredientArray[(this.rowIndex) - 1]; // subtract one because of header
     editingIngredient = true;
 
     if (isImperial) {
@@ -757,3 +754,292 @@ function resetForm(event) {
 // *************************
 // FUNCTIONS FOR SEARCH PAGE
 // *************************
+
+function getCategories() {
+  $("select").formSelect();
+  $(".categoriesOptions").on("contentChanged", function () {
+    $(this).formSelect();
+  });
+
+  $.get("/api/categories", function (data) {
+    for (let i = 0; i < data.length; i++) {
+      let newOption = $(`<option value="${data[i].id}">${data[i].name}</option>`)
+      $(".categoriesOptions").append(newOption)
+    }
+    $(".categoriesOptions").trigger("contentChanged");
+  });
+};
+
+let recipesArr = [];
+
+$(document).on("click", "#searchBtn", function (event) {
+  event.preventDefault();
+
+  let category = $(".categoriesOptions").val();
+  let title = $("#keyword").val().trim();
+
+  if (title === "") {
+    title = null;
+  };
+
+  let recipesByCategory;
+  let recipesbyTitle;
+
+  search(category, title, handleSearchResults);
+
+  function handleSearchResults(categoryData, titleData) {
+    if (categoryData !== "" && categoryData !== undefined && categoryData !== null) {
+      recipesByCategory = categoryData;
+    } else {
+      recipesByCategory = null;
+    }
+
+    if (titleData !== "" && titleData !== undefined && titleData !== null) {
+      recipesbyTitle = titleData;
+    } else {
+      recipesbyTitle = null;
+    }
+
+    let categoryIDArr = [];
+    let titleIDArr = [];
+
+    if (recipesByCategory !== null) {
+      for (let i = 0; i < recipesByCategory.length; i++) {
+        categoryIDArr.push(recipesByCategory[i].id)
+      };
+    } else {
+      categoryIDArr = null;
+    }
+
+    if (recipesbyTitle) {
+      for (let i = 0; i < recipesbyTitle.length; i++) {
+        titleIDArr.push(recipesbyTitle[i].id)
+      };
+    } else {
+      titleIDArr = null;
+    }
+
+    if (categoryIDArr !== null) {
+      for (let i = 0; i < recipesByCategory.length; i++) {
+        if (titleIDArr !== null && titleIDArr.includes(categoryIDArr[i])) {
+          recipesArr.push(recipesByCategory[i])
+        } else if (titleIDArr === null) {
+          recipesArr.push(recipesByCategory[i])
+        }
+      }
+    } else if (titleIDArr !== null) {
+      for (let i = 0; i < recipesbyTitle.length; i++) {
+        if (categoryIDArr === null) {
+          recipesArr.push(recipesbyTitle[i])
+        }
+      }
+    }
+
+    $(".center").text(recipesArr[0].title);
+    $("#recipe-desc").val(recipesArr[0].description);
+    $("#desc-label").addClass("active");
+    $("#submitted-by").val(recipesArr[0].User.firstName + " " + recipesArr[0].User.lastName);
+    $("#submitted-label").addClass("active");
+    $("#source").val(recipesArr[0].source);
+    $("#source-label").addClass("active");
+    $("#prep-time").val(recipesArr[0].prepTime + " mins");
+    $("#prep-label").addClass("active");
+    $("#cook-time").val(recipesArr[0].cookTime + " mins");
+    $("#cook-label").addClass("active");
+    $("#oven-temp").val(recipesArr[0].ovenTempF + "°F");
+    $("#temp-label").addClass("active");
+    $("#num-servings").val(recipesArr[0].numServings);
+    $("#servings-label").addClass("active");
+    $("#instructions").val(recipesArr[0].instructions);
+    $("#instructions-label").addClass("active");
+
+    let ingredients = recipesArr[0].Ingredients
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFat = 0;
+
+    const ingredientTable = $("#ingredient-table")
+    $(ingredientTable).empty();
+
+    for (let i = 0; i < ingredients.length; i++) {
+      let td1 = $("<td>").text(ingredients[i].imperialQty)
+      let td2 = $("<td>").text(ingredients[i].imperialUnit)
+      let td3 = $("<td>").text(ingredients[i].name)
+      let tr = $("<tr>")
+
+      $(tr).append(td1)
+      $(tr).append(td2)
+      $(tr).append(td3)
+      $(ingredientTable).append(tr)
+
+      totalCalories += parseInt(ingredients[i].calories)
+      totalProtein += parseInt(ingredients[i].protein)
+      totalCarbs += parseInt(ingredients[i].carbs)
+      totalFat += parseInt(ingredients[i].fat)
+
+      let calories = totalCalories / recipesArr[0].numServings;
+      let protein = totalProtein / recipesArr[0].numServings;
+      let carbs = totalCarbs / recipesArr[0].numServings;
+      let fat = totalFat / recipesArr[0].numServings;
+      $("#calories").val(calories);
+      $("#calories-label").addClass("active");
+      $("#protein").val(protein);
+      $("#protein-label").addClass("active");
+      $("#carbohydrates").val(carbs);
+      $("#carbs-label").addClass("active");
+      $("#fat").val(fat);
+      $("#fat-label").addClass("active");
+
+      M.textareaAutoResize($('#recipe-desc'));
+      M.textareaAutoResize($('#instructions'));
+      M.updateTextFields();
+    }
+
+    return recipesArr
+  };
+});
+
+let currentIndex = 0;
+
+$(document).on("click", "#prevBtn", function (event) {
+  event.stopPropagation();
+
+  if (currentIndex === 0) {
+    currentIndex = recipesArr.length - 1
+  } else {
+    currentIndex--
+  }
+
+  console.log("Index: " + currentIndex)
+  updateSearchDom(currentIndex)
+
+  return currentIndex;
+});
+
+$(document).on("click", "#nextBtn", function (event) {
+  event.stopPropagation();
+
+  if (currentIndex === recipesArr.length - 1) {
+    currentIndex = 0
+  } else {
+    currentIndex++
+  }
+
+  console.log("Index: " + currentIndex)
+  updateSearchDom(currentIndex)
+
+  return currentIndex;
+});
+
+function updateSearchDom(currentIndex) {
+  $(".center").text(recipesArr[currentIndex].title);
+  $("#recipe-desc").val(recipesArr[currentIndex].description);
+  $("#desc-label").addClass("active");
+  $("#submitted-by").val(recipesArr[currentIndex].User.firstName + " " + recipesArr[currentIndex].User.lastName);
+  $("#submitted-label").addClass("active");
+  $("#source").val(recipesArr[currentIndex].source);
+  $("#source-label").addClass("active");
+  $("#prep-time").val(recipesArr[currentIndex].prepTime + " mins");
+  $("#prep-label").addClass("active");
+  $("#cook-time").val(recipesArr[currentIndex].cookTime + " mins");
+  $("#cook-label").addClass("active");
+  $("#oven-temp").val(recipesArr[currentIndex].ovenTempF + "°F");
+  $("#temp-label").addClass("active");
+  $("#num-servings").val(recipesArr[currentIndex].numServings);
+  $("#servings-label").addClass("active");
+  $("#instructions").val(recipesArr[currentIndex].instructions);
+  $("#instructions-label").addClass("active");
+
+  let ingredients = recipesArr[currentIndex].Ingredients
+  let totalCalories = 0;
+  let totalProtein = 0;
+  let totalCarbs = 0;
+  let totalFat = 0;
+
+  const ingredientTable = $("#ingredient-table")
+  $(ingredientTable).empty();
+
+  for (let i = 0; i < ingredients.length; i++) {
+    let td1 = $("<td>").text(ingredients[i].imperialQty)
+    let td2 = $("<td>").text(ingredients[i].imperialUnit)
+    let td3 = $("<td>").text(ingredients[i].name)
+    let tr = $("<tr>")
+
+    $(tr).append(td1)
+    $(tr).append(td2)
+    $(tr).append(td3)
+    $(ingredientTable).append(tr)
+
+    totalCalories += parseInt(ingredients[i].calories)
+    totalProtein += parseInt(ingredients[i].protein)
+    totalCarbs += parseInt(ingredients[i].carbs)
+    totalFat += parseInt(ingredients[i].fat)
+
+    let calories = totalCalories / recipesArr[currentIndex].numServings;
+    let protein = totalProtein / recipesArr[currentIndex].numServings;
+    let carbs = totalCarbs / recipesArr[currentIndex].numServings;
+    let fat = totalFat / recipesArr[currentIndex].numServings;
+    $("#calories").val(calories);
+    $("#calories-label").addClass("active");
+    $("#protein").val(protein);
+    $("#protein-label").addClass("active");
+    $("#carbohydrates").val(carbs);
+    $("#carbs-label").addClass("active");
+    $("#fat").val(fat);
+    $("#fat-label").addClass("active");
+
+    M.textareaAutoResize($('#recipe-desc'));
+    M.textareaAutoResize($('#instructions'));
+    M.updateTextFields();
+  }
+}
+
+function search(categoryID, title, cb) {
+  let categoryData;
+  let titleData;
+
+  if (categoryID !== null && title !== null) {
+    $.get(`/api/recipesByCategory/${categoryID}`)
+      .done(function (data) {
+        categoryData = data
+
+        $.get(`/api/recipesbytitle/${title}`)
+          .done(function (data) {
+            titleData = data
+
+            cb(categoryData, titleData)
+          })
+          .fail(function (err) {
+            console.log(err)
+          })
+      })
+      .fail(function (err) {
+        console.log(err)
+      });
+
+  } else if (categoryID !== null && title === null) {
+    $.get(`/api/recipesByCategory/${categoryID}`)
+      .done(function (data) {
+        categoryData = data
+        titleData = null
+
+        cb(categoryData, titleData)
+      })
+      .fail(function (err) {
+        console.log(err)
+      });
+
+  } else if (categoryID === null && title !== null) {
+    $.get(`/api/recipesbytitle/${title}`)
+      .done(function (data) {
+        titleData = data
+        categoryData = null
+
+        cb(categoryData, titleData)
+      })
+      .fail(function (err) {
+        console.log(err)
+      });
+  };
+};

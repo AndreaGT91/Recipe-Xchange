@@ -1,9 +1,40 @@
 const db = require("../models");
+const { Op } = require("sequelize")
 
 module.exports = function (app) {
     app.get("/api/recipes", function (req, res) {
-        db.Recipes.findAll({}).then(function (dbRecipes) {
+        db.Recipes.findAll({
+            include: [db.Users, db.Ingredients]
+        }).then(function (dbRecipes) {
             res.json(dbRecipes);
+        });
+    });
+
+    app.get("/api/recipesByCategory/:id", function (req, res) {
+        db.Recipes.findAll({
+            where: {
+                [Op.or]: [
+                  { category1: req.params.id },
+                  { category2: req.params.id },
+                  { category3: req.params.id }
+                ]
+              },
+              include: [db.Users, db.Ingredients]
+        }).then(function (dbRecipes) {
+            res.json(dbRecipes)
+        });
+    });
+
+    app.get("/api/recipesByTitle/:title", function (req, res) {
+        db.Recipes.findAll({
+            where: {
+                title: {
+                    [Op.like]: "%" + req.params.title + "%"
+                }
+            },
+            include: [db.Users, db.Ingredients]
+        }).then(function (dbRecipes) {
+            res.json(dbRecipes)
         });
     });
 
@@ -11,7 +42,8 @@ module.exports = function (app) {
         db.Recipes.findOne({
             where: {
                 id: req.params.id
-            }
+            },
+            include: [db.Users, db.Ingredients]
         }).then(function (dbRecipe) {
             res.json(dbRecipe);
         });
