@@ -3,28 +3,23 @@ const { Op } = require("sequelize")
 
 module.exports = function (app) {
     app.get("/api/recipes", function (req, res) {
-        db.Recipes.findAll({}).then(function (dbRecipes) {
+        db.Recipes.findAll({
+            include: [db.Users, db.Ingredients]
+        }).then(function (dbRecipes) {
             res.json(dbRecipes);
         });
     });
 
-    app.get("/api/recipesByCategory/:category", function (req, res) {
-        db.Categories.findAll({
+    app.get("/api/recipesByCategory/:id", function (req, res) {
+        db.Recipes.findAll({
             where: {
-                name: req.params.category
+                [Op.or]: [
+                  { category1: req.params.id },
+                  { category2: req.params.id },
+                  { category3: req.params.id }
+                ]
               },
-              include: [db.Recipes]
-        }).then(function (dbRecipes) {
-            res.json(dbRecipes)
-        });
-    });
-
-    app.get("/api/recipesByIngredient/:ingredient", function (req, res) {
-        db.Ingredients.findAll({
-            where: {
-                name: req.params.ingredient
-              },
-              include: [db.Recipes]
+              include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
             res.json(dbRecipes)
         });
@@ -36,7 +31,8 @@ module.exports = function (app) {
                 title: {
                     [Op.like]: "%" + req.params.title + "%"
                 }
-            }
+            },
+            include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
             res.json(dbRecipes)
         });
@@ -47,6 +43,7 @@ module.exports = function (app) {
             where: {
                 id: req.params.id
             },
+            include: [db.Users, db.Ingredients]
         }).then(function (dbRecipe) {
             res.json(dbRecipe);
         });
@@ -67,8 +64,7 @@ module.exports = function (app) {
             category2: req.body.category2,
             category3: req.body.category3,
             public: req.body.public,
-            UserId: req.body.UserId,
-            CategoryId: req.body.CategoryId
+            UserId: req.body.UserId
         })
             .then(function (dbRecipe) {
                 res.json(dbRecipe)
