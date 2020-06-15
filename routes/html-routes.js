@@ -6,20 +6,12 @@ module.exports = function (app) {
     res.sendFile(path.join(__dirname, "../public/index.html"));
   });
 
-  app.get("/add", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/add.html"));
-  })
-
-  app.get("/profile", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/profile.html"));
-  })
-
-  app.get("/index", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+  app.get("/profile/:id", function (req, res) {
+    res.sendFile(path.join(__dirname, `../public/index.html/?user_id=${req.params.id}`));
   })
 
   app.get("/search", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/search.html"));
+    res.sendFile(path.join(__dirname, "../public/index.html"));
   })
 
   app.post("/login",
