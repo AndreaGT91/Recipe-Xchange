@@ -75,7 +75,6 @@ module.exports = function (app) {
             category3: req.body.category3,
             public: req.body.public,
             UserId: req.body.UserId
-            // UserId: req.body.UserId
         })
             .then(function (dbRecipe) {
                 res.json(dbRecipe)

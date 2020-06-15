@@ -29,11 +29,9 @@ let editingIngredient = false;
 // Html for edit buttons and public checkboxes
 const editButtonHtml = `<button class="btn waves-effect waves-light teal darken-4 editBtn"><i
   class="material-icons left">edit</i><span class="hide-on-small-only">Edit</span></button>&nbsp;`;
-// const publicCheckHtml =  `<label><input type="checkbox" class="filled-in" checked="checked" /></label>`;
 const publicCheckedHtml = `<i class="material-icons">check</i>`;
 const publicUncheckedHtml = `<i class="material-icons">not_interested</i>`;
-// const publicCheckedkHtml =  `<input type="checkbox" class="filled-in" checked="checked"></input>`;
-// const publicUncheckedHtml =  `<input type="checkbox" class="filled-in" checked="checked"></input>`;
+let recipeArray = [];
 
 // ***********************
 // FUNCTIONS FOR ALL PAGES
@@ -78,6 +76,10 @@ $(document).ready(function () {
           $("#saveUserBtn").click(saveUser);
           $("#cancelBtn").click(cancelChanges);
           $(".addBtn").click(addRecipe);
+          $("#username").change(usernameChange);
+          $("#current-password").change(passwordChange);
+          $("#new-password").change(passwordConfirmChange);
+
           loadUserData(true);
         });
       }
@@ -799,17 +801,59 @@ function cancelChanges(event) {
   loadUserData(false);
 };
 
+// On change for Email/Username
+function usernameChange(event) {
+
+};
+
+// On change for Password
+function passwordChange(event) {
+
+};
+
+// On change for Confirm Password
+function passwordConfirmChange(event) {
+
+};
+
 // On click for Add Recipe button on Profile page
 function addRecipe(event) {
-
+  event.preventDefault();
+  window.location.href = "/?user_id=" + currentUser.id + "?recipe_id=-1";
 };
 
 function editRecipe(event) {
+  event.preventDefault();
 
+  const recipeIndex = this.parentNode.parentNode.rowIndex - 1; // subtract one because of header
+
+  window.location.href = "/?user_id=" + currentUser.id + "?recipe_id=" + recipeArray[recipeIndex].id;
 };
 
 function deleteRecipe(event) {
+  event.preventDefault();
 
+  const recipeRow = this.parentNode.parentNode;
+  const recipeIndex = recipeRow.rowIndex - 1; // subtract one because of header
+
+// TODO: Use something other than confirm
+  if (confirm("Delete " + recipeArray[recipeIndex].title + "?")) {
+    // Delete recipe from database
+    $.ajax({
+      method: "DELETE",
+      url: "/api/recipes/" + recipeArray[recipeIndex].id
+    })
+    .done(function() {
+      // Delete row from table
+      recipeRow.remove();
+      // Delete from recipe array
+      recipeArray.splice(recipeIndex, 1);
+    })
+    .fail(function(error) {
+      // TODO: use something other than alert
+      alert("Could not delete recipe. Error code " + error);
+    });
+  };
 };
 
 // Function that loads user's information on Profile page
@@ -829,11 +873,12 @@ function loadUserData(loadRecipes) {
 
   if (loadRecipes) {
     $.get("/api/recipesByUser/" + currentUser.id, function(data) {
+      recipeArray = data;
       // Create a table row for each recipe
       const recipeTable = $("#recipe-body");
       let newRow;
 
-      data.forEach(item => {
+      recipeArray.forEach(item => {
         newRow = $("<tr>");
         // Display recipe title
         newRow.append($("<td>").html(item.title));
