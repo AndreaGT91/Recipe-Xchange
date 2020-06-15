@@ -803,7 +803,26 @@ function cancelChanges(event) {
 
 // On change for Email/Username
 function usernameChange(event) {
-
+  let newEmail = $("#username").val().trim();
+  let posAt = newEmail.indexOf("@");
+  // Validate email address. Materialize only checks for "@"
+  if ((posAt === -1) || (newEmail.lastIndexOf(".") < posAt)) {
+    // TODO: Use something other than alert
+    alert("Email is not valid format. Must be <name>@<server>.<domain>");
+    $("#username").focus();
+  }
+  // Verify that there was actually a change
+  else if (newEmail.toLowerCase() == currentUser.email.toLowerCase()) {
+    currentUser.email = newEmail; // May have just changed casing - no validation needed
+  }
+  // Confirm change
+  else if (confirm("Are you sure you want to change your email address?")) {
+    currentUser.email = newEmail;
+  }
+  // Changed in error, set back to original value
+  else {
+    $("#username").val(currentUser.email);
+  }
 };
 
 // On change for Password
@@ -822,6 +841,7 @@ function addRecipe(event) {
   window.location.href = "/?user_id=" + currentUser.id + "?recipe_id=-1";
 };
 
+// On click for Edit a specific recipe in table on Profile page
 function editRecipe(event) {
   event.preventDefault();
 
@@ -830,6 +850,7 @@ function editRecipe(event) {
   window.location.href = "/?user_id=" + currentUser.id + "?recipe_id=" + recipeArray[recipeIndex].id;
 };
 
+// On click for Delete a specific recipe in table on Profile page
 function deleteRecipe(event) {
   event.preventDefault();
 
