@@ -32,6 +32,7 @@ const editButtonHtml = `<button class="btn waves-effect waves-light teal darken-
 const publicCheckedHtml = `<i class="material-icons">check</i>`;
 const publicUncheckedHtml = `<i class="material-icons">not_interested</i>`;
 let recipeArray = [];
+let changedPassword = ""; // Temporary holding variable during password change
 
 // ***********************
 // FUNCTIONS FOR ALL PAGES
@@ -78,7 +79,11 @@ $(document).ready(function () {
           $(".addBtn").click(addRecipe);
           $("#username").change(usernameChange);
           $("#current-password").change(passwordChange);
-          $("#new-password").change(passwordConfirmChange);
+          $("#new-password").change(passwordChange);
+          $("#current-password").focus(passwordGetFocus);
+          $("#new-password").focus(passwordGetFocus);
+          $("#current-password").blur(passwordLoseFocus);
+          $("#new-password").blur(passwordLoseFocus);
 
           loadUserData(true);
         });
@@ -825,14 +830,59 @@ function usernameChange(event) {
   }
 };
 
-// On change for Password
-function passwordChange(event) {
-
+// When a password field gets focus, allow user to see characters, but clear current text
+function passwordGetFocus(event) {
+  event.target.value = "";
+  event.target.type = "text";
 };
 
-// On change for Confirm Password
-function passwordConfirmChange(event) {
+// When a password field loses focus, hide characters again; validated in onChange
+function passwordLoseFocus(event) {
+  event.target.type = "password"; // Change back to being masked
 
+  // If changedPassword still blank, no change was made
+  if (changedPassword === "") {
+    event.target.value = currentUser.password;
+    M.updateTextFields();
+  }
+  // Make sure password is not blank
+  else if (event.target.value.trim() === "") {
+    // Set helper text for correct field, stop event propagation, then reset focus
+    if (event.target.id === "current-password") {
+      $("#current-password-msg").text("Password cannot be blank.");
+      $("#new-password-msg").text("");
+    }
+    else {
+      $("#new-password-msg").text("Password cannot be blank.");
+      $("#current-password-msg").text("");
+    };  
+    event.stopPropagation();
+    event.target.focus();
+  }
+  // Otherwise, if fields are equal, need to update user password
+  else if ($("#current-password").val() === $("#new-password").val()) {
+    currentUser.password = event.target.value.trim();
+    changedPassword = "";
+    // Clear these out, just in case still set
+    $("#current-password-msg").text("");
+    $("#new-password-msg").text("");
+  }
+  // Otherwise, need to make user enter same password in other field
+  else if (event.target.id === "current-password") {
+    $("#current-password-msg").text("");
+    $("#new-password-msg").text("Passwords must match.");
+    $("#new-password").focus();
+  }
+  else {
+    $("#new-password-msg").text("");
+    $("#current-password-msg").text("Passwords must match.");
+    $("#current-password").focus();
+  };
+};
+
+// On change for Password fields
+function passwordChange(event) {
+  changedPassword = event.target.value.trim();
 };
 
 // On click for Add Recipe button on Profile page
