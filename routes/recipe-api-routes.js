@@ -17,7 +17,8 @@ module.exports = function (app) {
                   { category1: req.params.id },
                   { category2: req.params.id },
                   { category3: req.params.id }
-                ]
+                ],
+                public: true
               },
               include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
@@ -30,7 +31,8 @@ module.exports = function (app) {
             where: {
                 title: {
                     [Op.like]: "%" + req.params.title + "%"
-                }
+                },
+                public: true
             },
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
@@ -65,7 +67,6 @@ module.exports = function (app) {
             category3: req.body.category3,
             public: req.body.public,
             UserId: req.body.UserId
-            // UserId: req.body.UserId
         })
             .then(function (dbRecipe) {
                 res.json(dbRecipe)
