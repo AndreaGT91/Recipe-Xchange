@@ -18,9 +18,8 @@
   <div class="navbar-fixed">
     <!-- Dropdown menu for navbar -->
     <!-- <ul id="menu-dropdown" class="dropdown-content">
-      <li><a href="#!">Search Recipes</a></li>
-      <li><a href="#!">Add/Update Recipe</a></li>
-      <li><a href="#!">Manage Profile</a></li>
+      <li><a href="/">Search Recipes</a></li>
+      <li><a href="/login">Manage Profile</a></li>
       <li class="divider"></li>
       <li><a href="#!">Sign Out</a></li>
     </ul> -->
@@ -46,6 +45,30 @@
   <main class="background">
     <div class="container main-container">
       <div id="main-content"></div>
+       <!-- popup for user to login in with  -->
+       <div id="loginPopup">
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="emailLogin" type="email" class="validate">
+                <label for="email">Email</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="passwordLogin" type="password" class="validate">
+                <label for="password">Password</label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <a onclick="login()" class="waves-effect waves-light btn">Log In</a>
+        <a onclick="cancelLogin()" class="waves-effect waves-light btn">Cancel</a>
+        <div class="row">
+          <a href="http://localhost:8080/?user_id=-1">New user? Click here to create a Profile</a>
+        </div>
+      </div>
     </div>
   </main>
 

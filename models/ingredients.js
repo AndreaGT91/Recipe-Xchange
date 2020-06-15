@@ -3,9 +3,6 @@ module.exports = function (sequelize, DataTypes) {
         name: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: {
-                isAlpha: true
-            }
         },
         imperialQty: {
             type: DataTypes.FLOAT,
