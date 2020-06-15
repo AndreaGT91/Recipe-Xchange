@@ -53,7 +53,7 @@ h6 {
   background-color: lightgray;
   background-image: url("../img/dirty-pattern-paint-room-block.jpg");
   background-repeat: round;
-  width: 100% !important; /* mobile was not displaying properly without this */
+  width: 100% !important;  /* mobile was not displaying properly without this */
 }
 
 .main-container {

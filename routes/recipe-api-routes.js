@@ -10,7 +10,17 @@ module.exports = function (app) {
         });
     });
 
-    app.get("/api/recipesByCategory/:id", function (req, res) {
+    app.get("/api/recipesByUser/:id", function (req, res) {
+        db.Recipes.findAll({
+          where: {
+            UserId: req.params.id
+        }
+        }).then(function (dbRecipes) {
+            res.json(dbRecipes);
+        });
+    });
+
+  app.get("/api/recipesByCategory/:id", function (req, res) {
         db.Recipes.findAll({
             where: {
                 [Op.or]: [

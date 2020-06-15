@@ -8,11 +8,9 @@ const url = window.location.search;
 let isImperial = true;
 let currentPage = "";
 let currentUser = {};
-// Html for delete and edit buttons
+// Html for delete buttons
 const delButtonHtml = `<button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
   class="material-icons left">clear</i><span class="hide-on-small-only">Delete</span></button>`;
-const editButtonHtml = `<button class="btn waves-effect waves-light teal darken-4 editBtn"><i
-  class="material-icons left">edit</i><span class="hide-on-small-only">Edit</span></button>`;
 
 // ******************
 // ADD/UPDATE GLOBALS
@@ -24,6 +22,18 @@ let currentIngredient = {};
 let ingredientArray = [];
 // Global to know if editing an existing ingredient or adding new one
 let editingIngredient = false;
+
+// ***************
+// PROFILE GLOBALS
+// ***************
+// Html for edit buttons and public checkboxes
+const editButtonHtml = `<button class="btn waves-effect waves-light teal darken-4 editBtn"><i
+  class="material-icons left">edit</i><span class="hide-on-small-only">Edit</span></button>&nbsp;`;
+// const publicCheckHtml =  `<label><input type="checkbox" class="filled-in" checked="checked" /></label>`;
+const publicCheckedHtml = `<i class="material-icons">check</i>`;
+const publicUncheckedHtml = `<i class="material-icons">not_interested</i>`;
+// const publicCheckedkHtml =  `<input type="checkbox" class="filled-in" checked="checked"></input>`;
+// const publicUncheckedHtml =  `<input type="checkbox" class="filled-in" checked="checked"></input>`;
 
 // ***********************
 // FUNCTIONS FOR ALL PAGES
@@ -68,7 +78,7 @@ $(document).ready(function () {
           $("#saveUserBtn").click(saveUser);
           $("#cancelBtn").click(cancelChanges);
           $(".addBtn").click(addRecipe);
-          loadUserData();
+          loadUserData(true);
         });
       }
       // If we do have recipe_id, then load Add/Update page
@@ -784,18 +794,26 @@ function saveUser(event) {
 };
 
 // On click for Cancel button on Profile page
-function cancelChanges() {
-
+function cancelChanges(event) {
+  event.preventDefault();
+  loadUserData(false);
 };
 
 // On click for Add Recipe button on Profile page
-function addRecipe() {
+function addRecipe(event) {
+
+};
+
+function editRecipe(event) {
+
+};
+
+function deleteRecipe(event) {
 
 };
 
 // Function that loads user's information on Profile page
-function loadUserData() {
-  // Email and password are validated and set on change; don't need to update here; ID set on load
+function loadUserData(loadRecipes) {
   $("#username").val(currentUser.email);
   $("#current-password").val(currentUser.password);
   $("#new-password").val(currentUser.password);
@@ -808,6 +826,36 @@ function loadUserData() {
 
   M.updateTextFields(); // Labels won't move out of the way if you don't do this
   M.textareaAutoResize($("#about-me")); // Won't resize to fit data without this
+
+  if (loadRecipes) {
+    $.get("/api/recipesByUser/" + currentUser.id, function(data) {
+      // Create a table row for each recipe
+      const recipeTable = $("#recipe-body");
+      let newRow;
+
+      data.forEach(item => {
+        newRow = $("<tr>");
+        // Display recipe title
+        newRow.append($("<td>").html(item.title));
+        // Convert MySQL datetime to # milliseconds midnight of January 1, 1970, then to date string
+        newRow.append($("<td>").html((new Date(Date.parse(item.createdAt))).toLocaleDateString()));
+        // Set public to check if true, not sign if false
+        if (item.public) {
+          newRow.append($("<td>").html(publicCheckedHtml));
+        }
+        else {
+          newRow.append($("<td>").html(publicUncheckedHtml));
+        };
+        // Add buttons to edit or delete recipe
+        newRow.append($("<td>").html(editButtonHtml + delButtonHtml));
+        recipeTable.append(newRow);
+      });
+
+      // Add event handlers after elements have been created
+      $(".editBtn").click(editRecipe);
+      $(".deleteBtn").click(deleteRecipe);
+    });
+  };
 };
 
 // *************************
