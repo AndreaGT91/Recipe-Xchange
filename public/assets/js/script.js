@@ -661,6 +661,7 @@ function saveIngredient(event) {
           // TODO: Use something other than alert
           alert("Could not add ingredient. Error code ", error);
         });
+      };
     })
     .fail(function (error) {
       // TODO: Use something other than alert
