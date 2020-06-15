@@ -35,7 +35,7 @@ module.exports = function (sequelize, DataTypes) {
             }
         });
 
-        Recipes.hasMany(models.Ingredients);
+        Recipes.hasMany(models.Ingredients, { onDelete: 'cascade' });
     };
 
     return Recipes;
