@@ -29,6 +29,16 @@ module.exports = function (app) {
         res.redirect("/");
     });
 
+    app.get("/api/user_data/:id", function (req, res) {
+      db.Users.findOne({
+          where: {
+              id: req.params.id
+          }
+      }).then(function (dbUser) {
+          res.json(dbUser);
+      });
+    });
+
     app.get("/api/user_data", function (req, res) {
         if (!req.users) {
             res.json({});

@@ -4,9 +4,6 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
-            validate: {
-                isAlphanumeric: true
-            }
         },
         source: DataTypes.STRING,
         description: {
@@ -37,8 +34,6 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false
             }
         });
-
-        Recipes.belongsTo(models.Categories);
 
         Recipes.hasMany(models.Ingredients);
     };
