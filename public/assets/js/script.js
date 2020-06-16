@@ -440,7 +440,7 @@ function loginUser(event) {
       .done(function (data) {
         console.log(data);
         currentUser = data;
-        window.location.replace("/profile");
+        window.location.replace("/profile" + currentUser.id);
       })
       .fail(function (error) {
         // TODO: Use something other than alert
