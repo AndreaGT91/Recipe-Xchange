@@ -19,12 +19,10 @@ module.exports = function (sequelize, DataTypes) {
             allowNull: false
         },
         lastName: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
         },
         location: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
         },
         aboutMe: DataTypes.TEXT,
         imperial: {

@@ -3,22 +3,24 @@ const passport = require("passport")
 
 module.exports = function (app) {
   app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+    res.sendFile(path.join(__dirname, "../views/index.html/?search"));
   });
 
   app.get("/profile/:id", function (req, res) {
-    res.sendFile(path.join(__dirname, `../public/profile.html/?user_id=${req.params.id}`));
+    res.sendFile(path.join(__dirname, `../views/index.html/?profile?user_id=${req.params.id}`));
   })
 
-  app.get("/search", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/search.html"));
+  app.get("/search/:id", function (req, res) {
+    res.sendFile(path.join(__dirname, `../views/index.html/?search?user_id=${req.params.id}`));
+  })
+
+  app.get("/add/:user_id/:recipe_id", function (req, res) {
+    res.sendFile(path.join(__dirname, 
+      `../views/index.html/?add?user_id=${req.params.user_id}?recipe_id=${req.params.recipe_id}`));
   })
 
   app.get("/login", function (req, res) {
-    if (req.user) {
-      res.redirect("/profile/:id");
-    }
-    // or whatever you have that page named
-    res.sendFile(path.join(__dirname, "../public/login.html"));
+    res.sendFile(path.join(__dirname, "../views/index.html/?login"));
   });
+  
 };

@@ -18,6 +18,10 @@ button {
   margin-top: 0px;
 }
 
+#loginBtn, #cancelBtn {
+  margin-bottom: 20px;
+}
+
 h6 {
   text-decoration: underline;
 }

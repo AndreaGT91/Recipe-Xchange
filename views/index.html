@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Xchange</title>
+
+  <!-- Materialize compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Local CSS styling -->
+  <link rel="stylesheet" href="/assets/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div class="navbar-fixed">
+    <!-- Dropdown menu for navbar -->
+    <ul id="menu-dropdown" class="dropdown-content">
+      <li><a href="/?search" class="li-search">Search Recipes</a></li>
+      <li><a href="/?add" class="li-add">Add Recipe</a></li>
+      <li><a href="/?profile" class="li-profile">Manage Profile</a></li>
+      <li class="divider"></li>
+      <li><a href="/logout">Sign Out</a></li>
+    </ul>
+    <nav class="teal darken-4">
+      <div class="nav-wrapper">
+        <div class="switch">
+          <label class="white-text">
+            <span class="hide-on-small-only">Metric</span>
+            <input type="checkbox" checked id="imperial">
+            <span class="lever"></span>
+            <span class="hide-on-small-only">Imperial</span>
+          </label>
+          <a class="brand-logo center white-text">Recipe Xchange</a>
+          <a href="/?login" class="right" id="sign-in"><i class="material-icons right">login</i>
+            <span class="hide-on-small-only">Sign In</span></a>
+          <a class="dropdown-trigger right hide-on-med-and-down" data-target="menu-dropdown" 
+            id="user-name" hidden>Welcome!<i class="material-icons right">arrow_drop_down</i></a>
+          <a data-target="mobile-demo" class="sidenav-trigger right" id="mobile-menu" hidden>
+            <i class="material-icons">menu</i></a>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Dropdown menu for navbar when mobile -->
+  <ul class="sidenav sidenav-close" id="mobile-demo">
+    <li><a href="/?search" class="li-search">Search Recipes</a></li>
+    <li><a href="/?add" class="li-add">Add Recipe</a></li>
+    <li><a href="/?profile" class="li-profile">Manage Profile</a></li>
+    <li class="divider"></li>
+    <li><a href="/logout">Sign Out</a></li>
+  </ul>
+
+  <main class="background">
+    <div class="container main-container">
+      <div id="main-content">
+        <!-- popup for user to login in with  -->
+        <div class="row" id="loginPopup">
+          <form class="col s12 login-form">
+            <div class="row">
+              <div class="col s12">
+                <h5 class="center">Sign In/Create User Profile</h5>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="emailLogin" type="email" class="validate" required>
+                <label for="emailLogin">Email</label>
+                <span class="helper-text" data-error="Invalid email format"></span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="passwordLogin" type="password" class="validate" required>
+                <label for="passwordLogin">Password</label>
+              </div>
+            </div>
+            <button class="btn waves-effect waves-light teal darken-4" type="submit" id="loginBtn">
+              Sign In/Create User<i class="material-icons left">login</i></button>
+            <button class="btn waves-effect waves-light teal darken-4 right" type="reset" id="cancelBtn">
+              Cancel<i class="material-icons left">clear</i></button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer teal darken-4">
+    <div class="footer-copyright white-text">
+      © 2020 Copyright JAK
+      <a class="grey-text right" href="https://spoonacular.com/food-api">Powered by spoonacular API</a>
+      <a class="grey-text right" href="https://www.freepik.com/free-photos-vectors/background">
+        Background photo created by mrsiraphol - www.freepik.com</a>
+    </div>
+  </footer>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <!-- Compiled and minified JavaScript for Materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- Local javascript -->
+  <script src="/assets/js/script.js"></script>
+</body>
+
+</html>
