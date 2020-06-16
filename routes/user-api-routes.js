@@ -1,5 +1,6 @@
 const db = require("../models");
 const passport = require("../config/passport");
+const bcrypt = require("bcryptjs");
 
 module.exports = function (app) {
     app.post("/api/login", passport.authenticate("local"), function (req, res) {
@@ -52,6 +53,8 @@ module.exports = function (app) {
     });
 
     app.put("/api/user", function (req, res) {
+        req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null);
+
         db.Users.update(
             req.body,
             {
