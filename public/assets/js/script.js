@@ -407,6 +407,8 @@ function getFraction(decimal) {
 // ************************
 
 function loginUser(event) {
+  event.preventDefault();
+  
   // Whether new user or existing user, we need to get these values
   currentUser.email = $("#emailLogin").val();
   currentUser.password = $("#passwordLogin").val();
