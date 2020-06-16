@@ -18,10 +18,11 @@
   <div class="navbar-fixed">
     <!-- Dropdown menu for navbar -->
     <ul id="menu-dropdown" class="dropdown-content">
-      <li><a href="/">Search Recipes</a></li>
-      <li><a href="/login">Manage Profile</a></li>
+      <li><a href="/?search" class="li-search">Search Recipes</a></li>
+      <li><a href="/?add" class="li-add">Add Recipe</a></li>
+      <li><a href="/?profile" class="li-profile">Manage Profile</a></li>
       <li class="divider"></li>
-      <li><a href="#!">Sign Out</a></li>
+      <li><a href="/logout">Sign Out</a></li>
     </ul>
     <nav class="teal darken-4">
       <div class="nav-wrapper">
@@ -32,22 +33,33 @@
             <span class="lever"></span>
             <span class="hide-on-small-only">Imperial</span>
           </label>
-          <a href="#" class="brand-logo center white-text">Recipe Xchange</a>
+          <a class="brand-logo center white-text">Recipe Xchange</a>
           <a href="/?login" class="right" id="sign-in"><i class="material-icons right">login</i>
             <span class="hide-on-small-only">Sign In</span></a>
-          <a class="dropdown-trigger right" href="#!" data-target="menu-dropdown" id="user-name" hidden>
-            Welcome!<i class="material-icons right">arrow_drop_down</i></a>
+          <a class="dropdown-trigger right hide-on-med-and-down" data-target="menu-dropdown" 
+            id="user-name" hidden>Welcome!<i class="material-icons right">arrow_drop_down</i></a>
+          <a data-target="mobile-demo" class="sidenav-trigger right" id="mobile-menu" hidden>
+            <i class="material-icons">menu</i></a>
         </div>
       </div>
     </nav>
   </div>
+
+  <!-- Dropdown menu for navbar when mobile -->
+  <ul class="sidenav sidenav-close" id="mobile-demo">
+    <li><a href="/?search" class="li-search">Search Recipes</a></li>
+    <li><a href="/?add" class="li-add">Add Recipe</a></li>
+    <li><a href="/?profile" class="li-profile">Manage Profile</a></li>
+    <li class="divider"></li>
+    <li><a href="/logout">Sign Out</a></li>
+  </ul>
 
   <main class="background">
     <div class="container main-container">
       <div id="main-content">
         <!-- popup for user to login in with  -->
         <div class="row" id="loginPopup">
-          <form action="#" class="col s12 login-form">
+          <form class="col s12 login-form">
             <div class="row">
               <div class="col s12">
                 <h5 class="center">Sign In/Create User Profile</h5>

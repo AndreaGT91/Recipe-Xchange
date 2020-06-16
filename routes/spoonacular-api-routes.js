@@ -11,7 +11,7 @@ module.exports = function (app) {
     app.get("/api/getConversion", function (req, res) {
         axios.get(apiGetConversion, {
             params: {
-                ingredientName: req.body.currentIngredient.name,
+                ingredientName: req.body.name,
                 sourceAmount: req.body.sourceAmount,
                 sourceUnit: req.body.sourceUnit,
                 targetUnit: req.body.targetUnit
