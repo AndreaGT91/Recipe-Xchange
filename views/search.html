@@ -1,21 +1,24 @@
 <div class="row">
+  <div class="col s12">
+    <h5 class="center">Search Recipes</h5>
+  </div>
+</div>
+<div class="row">
   <form action="#" class="col s12">
     <div class="row">
-      <button id="searchBtn" class="btn waves-effect waves-light teal darken-4" type="submit" name="action">Search<i
-          class="material-icons left">search</i></button>
-      <br>
-      <br>
-    </div>
-    <div class="row">
-      <div class="input-field col s12 m6 l4">
+      <div class="input-field col s12 m5">
         <select class="categoriesOptions">
           <option value="" disabled selected>Category</option>
         </select>
         <label>By Category</label>
       </div>
-      <div class="input-field col s12 m6 l4">
+      <div class="input-field col s12 m5">
         <input placeholder="Keyword" id="keyword" type="text">
         <label for="keyword">By Title Keyword</label>
+      </div>
+      <div class="col s12 m2">
+        <button id="searchBtn" class="btn waves-effect waves-light teal darken-4 right" type="submit" name="action">
+          Search<i class="material-icons left">search</i></button>
       </div>
     </div> <!-- search fields row -->
   </form> <!-- search form -->
@@ -25,7 +28,8 @@
   <form action="#" class="col s12">
     <div class="row">
       <div class="col s2">
-        <a id="prevBtn" class="btn waves-effect waves-light teal darken-4"><i class="material-icons left">arrow_back_ios</i>Prev</a>
+        <a id="prevBtn" class="btn waves-effect waves-light teal darken-4">
+          <i class="material-icons left">arrow_back_ios</i>Prev</a>
       </div>
       <div class="col s8">
         <h5 class="center"></h5>

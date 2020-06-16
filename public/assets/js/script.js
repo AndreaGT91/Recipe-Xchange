@@ -2,8 +2,6 @@
 // GLOBALS FOR ALL PAGES
 // *********************
 
-// Need URL to determine which page to load, and which data
-const url = window.location.search;
 // Need to know if using Imperial or Metric Units; default to Imperial because we are AMERICANS!
 let isImperial = true;
 let currentPage = "";
@@ -48,94 +46,110 @@ $(document).ready(function () {
     $("#imperial").click(toggleUnits); // Event handler for Imperial/Metric unit selector
   };
 
-  // If ?user_id not in URL, then we need search page
-  if (url.indexOf("?user_id=") === -1) {
+  // Need URL to determine which page to load, and which data
+  const url = window.location.search;
+  const urlArray = url.split("?");
+
+  // See if user ID is passed in URL, default to -1, meaning no user signed in
+  let userId = -1;
+  const userIdParam = "?user_id=";
+  const userIdIndex = url.indexOf(userIdParam);
+  if (userIdIndex !== -1) {
+    userId = parseInt(url.substr(userIdIndex + userIdParam.length));
+  };
+
+  // If user ID passed, go ahead and load user data
+  if (userId !== -1) {
+    $.get("/api/user_data/" + userId, function (data) {
+      currentUser = data;
+      $("#sign-in").hide();
+      $("#user-name").show();
+      $("#user-name").text("Welcome " + currentUser.firstName + " " + currentUser.lastName);
+    });
+  };
+
+  // Check for login page
+  if (urlArray.indexOf("login") !== -1) {
+    currentPage = "login";
+    $("#loginPopup").show();
+    $("#loginBtn").click(loginUser);
+    $("#cancelBtn").click(cancelLogin);
+    $("#emailLogin").change(emailChange);
+    $("#passwordLogin").focus(passwordGetFocus);
+    $("#passwordLogin").blur(loginPasswordLoseFocus);
+  }
+  // Check for profile page
+  else if (urlArray.indexOf("profile") !== -1) {
+    currentPage = "profile";
+    $("#main-content").load("profile.html", function () {
+      globalSetup();
+
+      // These are just for the Manage Profile page
+      $("#saveUserBtn").click(saveUser);
+      $("#cancelBtn").click(cancelChanges);
+      $(".addBtn").click(addRecipe);
+      $("#username").change(usernameChange);
+      $("#current-password").change(passwordChange);
+      $("#new-password").change(passwordChange);
+      $("#current-password").focus(passwordGetFocus);
+      $("#new-password").focus(passwordGetFocus);
+      $("#current-password").blur(passwordLoseFocus);
+      $("#new-password").blur(passwordLoseFocus);
+
+      loadUserData(true);
+    });
+  }
+  // Check for add page
+  else if (urlArray.indexOf("add") !== -1) {
+    currentPage = "add";
+    $("#main-content").load("add.html", function () {
+      globalSetup();
+
+      // These are just for the Add/Update page
+      $("#saveBtn").click(saveRecipe);
+      $("#resetBtn").click(resetForm);
+      $("#ingredBtn").click(saveIngredient);
+
+      // Retrieve list of categories
+      let newOption;
+      const categoryList = $("#category_list"); // Use datalist, not select, to get down arrows
+
+      $.get("/api/categories", function (data) {
+        data.forEach(item => {
+          newOption = $("<option>");
+          newOption.data("value", item.id); // data-value is category id and is hidden
+          newOption.attr("name", item.id); // name is also id and hidden
+          newOption.val(item.name); // value is category name and is displayed
+          newOption.attr("id", item.name); // used to find option later when saving recipe
+          categoryList.append(newOption);
+
+          const recipeIdParam = "?recipe_id=";
+          const recipeIdIndex = url.indexOf(recipeIdParam);
+          if (recipeIdIndex !== -1) {
+            let recipeId = parseInt(url.substr(recipeIdIndex + recipeIdParam.length));
+            $.get("/api/recipes/" + recipeId, function (data) {
+              currentRecipe = data;
+              // Get its ingredients, too
+              $.get("/api/ingredients/" + recipeId, function (result) {
+                ingredientArray = result;
+                toggleUnits();
+              });
+            });
+          };
+        });
+      }); 
+    }); 
+  }
+  // Default is search page
+  else {
+    currentPage = "search";
     $("#main-content").load("search.html", function () {
-      currentPage = "search";
       globalSetup();
       toggleUnits();
       getCategories();
     });
-  }
-  // If we do have user_id, then we need either Profile or Add/Update pages
-  else {
-    let urlArray = url.split("="); // Could have user_id and recipe_id, just user_id, or neither
-    let UserId = parseInt(urlArray[1]); // user_id is first
-  
-    // Get user data
-    $.get("/api/user_data/" + UserId, function(data) {
-      currentUser = data;
-      $("#user-name").text("Welcome " + currentUser.firstName + " " + currentUser.lastName);
-
-      // If ?recipe_id not in URL, then we need Profile page
-      if (url.indexOf("?recipe_id=") === -1) {
-        $("#main-content").load("profile.html", function () {
-          currentPage = "profile";
-          globalSetup();
-
-          // These are just for the Manage Profile page
-          $("#saveUserBtn").click(saveUser);
-          $("#cancelBtn").click(cancelChanges);
-          $(".addBtn").click(addRecipe);
-          $("#username").change(usernameChange);
-          $("#current-password").change(passwordChange);
-          $("#new-password").change(passwordChange);
-          $("#current-password").focus(passwordGetFocus);
-          $("#new-password").focus(passwordGetFocus);
-          $("#current-password").blur(passwordLoseFocus);
-          $("#new-password").blur(passwordLoseFocus);
-
-          loadUserData(true);
-        });
-      }
-      // If we do have recipe_id, then load Add/Update page
-      else {
-        let RecipeId = parseInt(urlArray[2]); // Will be last of 3 sections of URL
-
-        $("#main-content").load("add.html", function () {
-          currentPage = "add";
-          globalSetup();
-
-          // These are just for the Add/Update page
-          $("#saveBtn").click(saveRecipe);
-          $("#resetBtn").click(resetForm);
-          $("#ingredBtn").click(saveIngredient);
-
-          // Retrieve list of categories
-          let newOption;
-          const categoryList = $("#category_list"); // Use datalist, not select, to get down arrows
-
-          $.get("/api/categories", function(data) {
-            data.forEach(item => {
-              newOption = $("<option>");
-              newOption.data("value", item.id); // data-value is category id and is hidden
-              newOption.attr("name", item.id); // name is also id and hidden
-              newOption.val(item.name); // value is category name and is displayed
-              newOption.attr("id", item.name); // used to find option later when saving recipe
-              categoryList.append(newOption);
-
-              // If RecipeId is -1, then we just need blank page; otherwise, get recipe data
-              if (RecipeId !== -1) {
-                $.get("/api/recipes/" + RecipeId, function(data) {
-                  currentRecipe = data;
-                  // Get its ingredients, too
-                  $.get("/api/ingredients/" + RecipeId, function(result) {
-                    ingredientArray = result;
-                    toggleUnits();
-                  });
-                });
-              };
-            });
-          });
-        });
-      };
-    });
   };
 }); // End of document ready function
-
-function showPopup() {
-  document.getElementById("loginPopup").style.display = "block";
-};
 
 // Convert field data to valid input for database
 function getInteger(value) {
@@ -380,6 +394,85 @@ function getFraction(decimal) {
   };
 };
 
+// ************************
+// FUNCTIONS FOR LOGIN PAGE
+// ************************
+
+function loginUser(event) {
+  // Whether new user or existing user, we need to get these values
+  currentUser.email = $("#emailLogin").val();
+  currentUser.password = $("#passwordLogin").val();
+
+  // If new user, create profile
+  if (!currentUser.id) {
+    currentUser.firstName = "New user";
+    currentUser.lastName = "";
+    currentUser.location = "";
+    currentUser.aboutMe = "";
+    currentUser.imperial = $("#imperial")[0].checked;
+
+    $.post("/api/signup", currentUser)
+      .done(function (data) {
+        currentUser = data;
+        window.location.replace("/profile/" + currentUser.id);
+      })
+      .fail(function (error) {
+        // TODO: Use something other than alert
+        alert("Error creating login: ", error);
+      });
+  }
+  // Existing user, verify password
+  else {
+    $.post("/api/login", {
+      email: currentUser.email,
+      password: currentUser.password
+    })
+      .done(function (data) {
+        console.log(data);
+        currentUser = data;
+        window.location.replace("/profile/" + currentUser.id);
+      })
+      .fail(function (error) {
+        // TODO: Use something other than alert
+        alert("Invalid password for " + currentUser.email);
+        $("#passwordLogin").focus();
+      });
+  };
+};
+
+function cancelLogin(event) {
+  // Go to search page if user cancels login
+  window.location.replace("/");
+};
+
+// On change for Email/Username
+function emailChange(event) {
+  let email = event.target.value.trim();
+  let posAt = email.indexOf("@");
+
+  // Validate email address. Materialize only checks for "@"
+  if ((posAt === -1) || (email.lastIndexOf(".") < posAt)) {
+    // TODO: Use something other than alert
+    alert("Email is not valid format. Must be <name>@<server>.<domain>");
+    event.target.focus();
+  }
+  else {
+    // Load data for that email address, if found
+    $.get("/api/userByEmail/" + email, function (data) {
+      if (data) {
+        currentUser = data;
+      }
+      else {
+        currentUser = {};
+      };
+    });
+  };
+};
+
+function loginPasswordLoseFocus(event) {
+  event.target.type = "password"; // Change back to being masked
+};
+
 // *****************************
 // FUNCTIONS FOR ADD/UPDATE PAGE
 // *****************************
@@ -396,7 +489,7 @@ function saveRecipe(event) {
     else {
       // Capitalize first letter of each word, lowercase the rest
       let catList = catName.split(" ");
-      for (let i=0; i<catList.length; i++) {
+      for (let i = 0; i < catList.length; i++) {
         catList[i] = catList[i][0].toUpperCase() + catList[i].substr(1).toLowerCase();
       };
       catName = catList.join(" ");
@@ -412,22 +505,22 @@ function saveRecipe(event) {
         $.post("/api/addcategory", {
           name: catName
         })
-        .done(function(data) {
-          // Add new category to category_list
-          let newOption = $("<option>");
-          newOption.data("value", data.id); // data-value is category id and is hidden
-          newOption.attr("name", data.id); // name is also id and hidden
-          newOption.val(catName); // value is category name and is displayed
-          newOption.attr("id", catName); // used to find option later when saving recipe
-          $("#category_list").append(newOption);
+          .done(function (data) {
+            // Add new category to category_list
+            let newOption = $("<option>");
+            newOption.data("value", data.id); // data-value is category id and is hidden
+            newOption.attr("name", data.id); // name is also id and hidden
+            newOption.val(catName); // value is category name and is displayed
+            newOption.attr("id", catName); // used to find option later when saving recipe
+            $("#category_list").append(newOption);
 
-          return data.id
-        })
-        .fail(function(error) {
-          // TODO: Use something other than alert
-          alert("Could not add category ", catName);
-          return null
-        });
+            return data.id
+          })
+          .fail(function (error) {
+            // TODO: Use something other than alert
+            alert("Could not add category ", catName);
+            return null
+          });
       };
     };
   };
@@ -473,46 +566,46 @@ function saveRecipe(event) {
       url: "/api/recipes",
       data: currentRecipe
     })
-    .done(function() {
-      // TODO: Use something other than alert
-      alert("Recipe updated.");
-    })
-    .fail(function() {
-      // TODO: Use something other than alert
-      alert("Unable to update recipe.");
-    });
+      .done(function () {
+        // TODO: Use something other than alert
+        alert("Recipe updated.");
+      })
+      .fail(function () {
+        // TODO: Use something other than alert
+        alert("Unable to update recipe.");
+      });
   }
   // Add new recipe
   else {
     $.post("/api/addrecipe", currentRecipe)
-    .done(function(data) {
-      currentRecipe = data;
+      .done(function (data) {
+        currentRecipe = data;
 
-      if (ingredientArray.length > 0) {
-        // Set RecipeId for each ingredient
-        ingredientArray.forEach(item => item.RecipeId = currentRecipe.id);
+        if (ingredientArray.length > 0) {
+          // Set RecipeId for each ingredient
+          ingredientArray.forEach(item => item.RecipeId = currentRecipe.id);
 
-        $.post("/api/addingredient", ingredientArray)
-        .done(function() {
+          $.post("/api/addingredient", ingredientArray)
+            .done(function () {
+              loadRecipeData();
+              // TODO: Use something other than alert
+              alert("Recipe added!");
+            })
+            .fail(function (error) {
+              // TODO: Use something other than alert
+              alert("Error adding ingredients: ", error);
+            });
+        }
+        else {
           loadRecipeData();
           // TODO: Use something other than alert
           alert("Recipe added!");
-        })
-        .fail(function(error) {
-          // TODO: Use something other than alert
-          alert("Error adding ingredients: ", error);
-        });
-      }
-      else {
-        loadRecipeData();
+        };
+      })
+      .fail(function (error) {
         // TODO: Use something other than alert
-        alert("Recipe added!");
-      };
-    })
-    .fail(function(error) {
-      // TODO: Use something other than alert
-      alert("Error adding recipe: ", error);
-    });
+        alert("Error adding recipe: ", error);
+      });
   };
 };
 
@@ -587,7 +680,7 @@ function saveIngredient(event) {
   const spoonacularApiKey = "6572c1d2e7734a0385d6e5765993d8ca"; // TODO: Move to server side to protect key
   const apiGetIngredInfo = `https://api.spoonacular.com/recipes/parseIngredients` +
     `?apiKey=${spoonacularApiKey}&includeNutrition=true&ingredientList=`;
- 
+
   // Retrieve the name from the input form
   let ingredList = currentIngredient.name = $("#ingredient").val();
 
@@ -621,83 +714,83 @@ function saveIngredient(event) {
     method: "POST",
     contentType: "application/x-www-form-urlencoded"
   })
-  .done(function (response) {
-    // Then, retrieve all the nutrition info
-    const nutrients = response[0].nutrition.nutrients; // array of nutrient info
-    currentIngredient.calories = Math.round(nutrients.find(item => item.title === "Calories").amount);
-    currentIngredient.protein = Math.round(nutrients.find(item => item.title === "Protein").amount);
-    currentIngredient.carbs = Math.round(nutrients.find(item => item.title === "Carbohydrates").amount);
-    currentIngredient.fat = Math.round(nutrients.find(item => item.title === "Fat").amount);
+    .done(function (response) {
+      // Then, retrieve all the nutrition info
+      const nutrients = response[0].nutrition.nutrients; // array of nutrient info
+      currentIngredient.calories = Math.round(nutrients.find(item => item.title === "Calories").amount);
+      currentIngredient.protein = Math.round(nutrients.find(item => item.title === "Protein").amount);
+      currentIngredient.carbs = Math.round(nutrients.find(item => item.title === "Carbohydrates").amount);
+      currentIngredient.fat = Math.round(nutrients.find(item => item.title === "Fat").amount);
 
-    // Finally, do call to get imperial/metric conversion
-    $.ajax({
-      url: apiGetConversion,
-      method: "GET",
-      contentType: "application/json"
-    })
-    .done(function (res) {
-      // Set quantity/unit fields with converted data
-      if (isImperial) {
-        currentIngredient.metricQty = res.targetAmount;
-        currentIngredient.metricUnit = res.targetUnit;
-      }
-      else {
-        currentIngredient.imperialQty = res.targetAmount;
-        currentIngredient.imperialUnit = res.targetUnit;
-      };
+      // Finally, do call to get imperial/metric conversion
+      $.ajax({
+        url: apiGetConversion,
+        method: "GET",
+        contentType: "application/json"
+      })
+        .done(function (res) {
+          // Set quantity/unit fields with converted data
+          if (isImperial) {
+            currentIngredient.metricQty = res.targetAmount;
+            currentIngredient.metricUnit = res.targetUnit;
+          }
+          else {
+            currentIngredient.imperialQty = res.targetAmount;
+            currentIngredient.imperialUnit = res.targetUnit;
+          };
 
-      // Time to save: determine if we are updating existing ingredient
-      if (editingIngredient) {
-        // If editing existing recipe, go ahead and update the database
-        if (currentRecipe.id) {
-          $.ajax({
-            method: "PUT",
-            url: "/api/ingredients",
-            data: currentIngredient
-          })
-          .done(function() {
-            updateIngredient();
-          })
-          .fail(function(error) {
-            // TODO: use something other than alert
-            alert("Could not update ingredient. Error code " + error);
-          });
-        }
-        // If adding a new recipe, we don't save ingredient in database until recipe saved
-        else {
-          updateIngredient();
-        };
-      }
-      // Adding new ingredient to existing recipe, go ahead and save to database
-      else if (currentRecipe.id) {
-        currentIngredient.RecipeId = currentRecipe.id;
+          // Time to save: determine if we are updating existing ingredient
+          if (editingIngredient) {
+            // If editing existing recipe, go ahead and update the database
+            if (currentRecipe.id) {
+              $.ajax({
+                method: "PUT",
+                url: "/api/ingredients",
+                data: currentIngredient
+              })
+                .done(function () {
+                  updateIngredient();
+                })
+                .fail(function (error) {
+                  // TODO: use something other than alert
+                  alert("Could not update ingredient. Error code " + error);
+                });
+            }
+            // If adding a new recipe, we don't save ingredient in database until recipe saved
+            else {
+              updateIngredient();
+            };
+          }
+          // Adding new ingredient to existing recipe, go ahead and save to database
+          else if (currentRecipe.id) {
+            currentIngredient.RecipeId = currentRecipe.id;
 
-        $.post("/api/addingredient", currentIngredient)
-        .done(function(data) {
-          currentIngredient = data;
-          addIngredient();
-          // TODO: Use something other than alert
-          alert("Added ingredient.");
+            $.post("/api/addingredient", currentIngredient)
+              .done(function (data) {
+                currentIngredient = data;
+                addIngredient();
+                // TODO: Use something other than alert
+                alert("Added ingredient.");
+              })
+              .fail(function (error) {
+                // TODO: Use something other than alert
+                alert("Could not add ingredient. Error code ", error);
+              });
+          };
         })
-        .fail(function(error) {
+        .fail(function (error) {
           // TODO: Use something other than alert
-          alert("Could not add ingredient. Error code ", error);
+          alert("Could not retrieve conversion information. Error code ", error);
         });
-      };
     })
     .fail(function (error) {
       // TODO: Use something other than alert
-      alert("Could not retrieve conversion information. Error code ", error);
+      alert("Could not retrieve nutrition information. Error code ", error);
     });
-  })
-  .fail(function (error) {
-    // TODO: Use something other than alert
-    alert("Could not retrieve nutrition information. Error code ", error);
-  });
 };
 
 // Ingredient Delete click event - deletes selected ingredient
-function deleteIngredient(event) {  
+function deleteIngredient(event) {
   event.stopPropagation(); // Don't want row click event handle called
 
   const ingredRow = this.parentNode.parentNode;
@@ -710,23 +803,23 @@ function deleteIngredient(event) {
       method: "DELETE",
       url: "/api/ingredients/" + ingredientArray[ingredIndex].id
     })
-    .done(function() {
-      // Delete row from table
-      ingredRow.remove();
-      // Clear ingredient add/update form if it holds deleted ingredient
-      if (currentIngredient.id === ingredientArray[ingredIndex].id) {
-        $(".ingredient-form")[0].reset();
-        currentIngredient = {};
-      };
-      // Delete from ingredient array
-      ingredientArray.splice(ingredIndex, 1);
-      // Recalculate nutrition info
-      calculateNutrition(getInteger($("#num-servings").val()));
-    })
-    .fail(function(error) {
-      // TODO: use something other than alert
-      alert("Could not delete ingredient. Error code " + error);
-    });
+      .done(function () {
+        // Delete row from table
+        ingredRow.remove();
+        // Clear ingredient add/update form if it holds deleted ingredient
+        if (currentIngredient.id === ingredientArray[ingredIndex].id) {
+          $(".ingredient-form")[0].reset();
+          currentIngredient = {};
+        };
+        // Delete from ingredient array
+        ingredientArray.splice(ingredIndex, 1);
+        // Recalculate nutrition info
+        calculateNutrition(getInteger($("#num-servings").val()));
+      })
+      .fail(function (error) {
+        // TODO: use something other than alert
+        alert("Could not delete ingredient. Error code " + error);
+      });
   };
 };
 
@@ -790,14 +883,14 @@ function saveUser(event) {
     url: "/api/user",
     data: currentUser
   })
-  .done(function() {
-    // TODO: Use something other than alert
-    alert("Profile updated.");
-  })
-  .fail(function() {
-    // TODO: Use something other than alert
-    alert("Unable to update profile.");
-  });
+    .done(function () {
+      // TODO: Use something other than alert
+      alert("Profile updated.");
+    })
+    .fail(function () {
+      // TODO: Use something other than alert
+      alert("Unable to update profile.");
+    });
 };
 
 // On click for Cancel button on Profile page
@@ -855,7 +948,7 @@ function passwordLoseFocus(event) {
     else {
       $("#new-password-msg").text("Password cannot be blank.");
       $("#current-password-msg").text("");
-    };  
+    };
     event.stopPropagation();
     event.target.focus();
   }
@@ -888,7 +981,7 @@ function passwordChange(event) {
 // On click for Add Recipe button on Profile page
 function addRecipe(event) {
   event.preventDefault();
-  window.location.href = "/?user_id=" + currentUser.id + "?recipe_id=-1";
+  window.location.href = "/add/" + currentUser.id + "/-1";
 };
 
 // On click for Edit a specific recipe in table on Profile page
@@ -897,7 +990,7 @@ function editRecipe(event) {
 
   const recipeIndex = this.parentNode.parentNode.rowIndex - 1; // subtract one because of header
 
-  window.location.href = "/?user_id=" + currentUser.id + "?recipe_id=" + recipeArray[recipeIndex].id;
+  window.location.href = "/add/" + currentUser.id + "/" + recipeArray[recipeIndex].id;
 };
 
 // On click for Delete a specific recipe in table on Profile page
@@ -907,23 +1000,23 @@ function deleteRecipe(event) {
   const recipeRow = this.parentNode.parentNode;
   const recipeIndex = recipeRow.rowIndex - 1; // subtract one because of header
 
-// TODO: Use something other than confirm
+  // TODO: Use something other than confirm
   if (confirm("Delete " + recipeArray[recipeIndex].title + "?")) {
     // Delete recipe from database
     $.ajax({
       method: "DELETE",
       url: "/api/recipes/" + recipeArray[recipeIndex].id
     })
-    .done(function() {
-      // Delete row from table
-      recipeRow.remove();
-      // Delete from recipe array
-      recipeArray.splice(recipeIndex, 1);
-    })
-    .fail(function(error) {
-      // TODO: use something other than alert
-      alert("Could not delete recipe. Error code " + error);
-    });
+      .done(function () {
+        // Delete row from table
+        recipeRow.remove();
+        // Delete from recipe array
+        recipeArray.splice(recipeIndex, 1);
+      })
+      .fail(function (error) {
+        // TODO: use something other than alert
+        alert("Could not delete recipe. Error code " + error);
+      });
   };
 };
 
@@ -943,7 +1036,7 @@ function loadUserData(loadRecipes) {
   M.textareaAutoResize($("#about-me")); // Won't resize to fit data without this
 
   if (loadRecipes) {
-    $.get("/api/recipesByUser/" + currentUser.id, function(data) {
+    $.get("/api/recipesByUser/" + currentUser.id, function (data) {
       recipeArray = data;
       // Create a table row for each recipe
       const recipeTable = $("#recipe-body");
