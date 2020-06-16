@@ -2,9 +2,13 @@ const db = require("../models");
 
 module.exports = function (app) {
     app.get("/api/categories", function (req, res) {
-        db.Categories.findAll({}).then(function (dbCategories) {
-            res.json(dbCategories);
-        });
+        db.Categories.findAll({})
+            .then(function (dbCategories) {
+                res.json(dbCategories);
+            }).catch(function (err) {
+                console.log(err);
+                res.status(401).json(err);
+            });
     });
 
     app.get("/api/categories/:id", function (req, res) {
@@ -14,19 +18,21 @@ module.exports = function (app) {
             }
         }).then(function (dbCategory) {
             res.json(dbCategory);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
     app.post("/api/addcategory", function (req, res) {
         db.Categories.create({
             name: req.body.name,
-        })
-            .then(function (dbCategory) {
-                res.json(dbCategory)
-            })
-            .catch(function (err) {
-                res.status(401).json(err);
-            })
+        }).then(function (dbCategory) {
+            res.json(dbCategory)
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
+        });
     });
 
     app.put("/api/categories", function (req, res) {
@@ -38,6 +44,9 @@ module.exports = function (app) {
                 }
             }).then(function (dbCategory) {
                 res.json(dbCategory);
+            }).catch(function (err) {
+                console.log(err);
+                res.status(401).json(err);
             });
     });
 
@@ -48,6 +57,9 @@ module.exports = function (app) {
             }
         }).then(function (dbCategory) {
             res.json(dbCategory);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 };

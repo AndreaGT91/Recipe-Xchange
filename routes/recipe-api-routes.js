@@ -7,32 +7,41 @@ module.exports = function (app) {
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
             res.json(dbRecipes);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
     app.get("/api/recipesByUser/:id", function (req, res) {
         db.Recipes.findAll({
-          where: {
-            UserId: req.params.id
-        }
+            where: {
+                UserId: req.params.id
+            }
         }).then(function (dbRecipes) {
             res.json(dbRecipes);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
-  app.get("/api/recipesByCategory/:id", function (req, res) {
+    app.get("/api/recipesByCategory/:id", function (req, res) {
         db.Recipes.findAll({
             where: {
                 [Op.or]: [
-                  { category1: req.params.id },
-                  { category2: req.params.id },
-                  { category3: req.params.id }
+                    { category1: req.params.id },
+                    { category2: req.params.id },
+                    { category3: req.params.id }
                 ],
                 public: true
-              },
-              include: [db.Users, db.Ingredients]
+            },
+            include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
             res.json(dbRecipes)
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
@@ -47,6 +56,9 @@ module.exports = function (app) {
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
             res.json(dbRecipes)
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
@@ -58,6 +70,9 @@ module.exports = function (app) {
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipe) {
             res.json(dbRecipe);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
@@ -77,14 +92,12 @@ module.exports = function (app) {
             category3: req.body.category3,
             public: req.body.public,
             UserId: req.body.UserId
-        })
-            .then(function (dbRecipe) {
-                res.json(dbRecipe)
-            })
-            .catch(function (err) {
-                console.log(err);
-                res.status(401).json(err);
-            })
+        }).then(function (dbRecipe) {
+            res.json(dbRecipe)
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
+        });
     });
 
     app.put("/api/recipes", function (req, res) {
@@ -96,6 +109,9 @@ module.exports = function (app) {
                 }
             }).then(function (dbRecipe) {
                 res.json(dbRecipe);
+            }).catch(function (err) {
+                console.log(err);
+                res.status(401).json(err);
             });
     });
 
@@ -106,6 +122,9 @@ module.exports = function (app) {
             }
         }).then(function (dbRecipe) {
             res.json(dbRecipe);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 };
