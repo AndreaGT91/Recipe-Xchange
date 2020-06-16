@@ -7,16 +7,18 @@ module.exports = function (app) {
   });
 
   app.get("/profile/:id", function (req, res) {
-    res.sendFile(path.join(__dirname, `../public/index.html/?user_id=${req.params.id}`));
+    res.sendFile(path.join(__dirname, `../public/profile.html/?user_id=${req.params.id}`));
   })
 
   app.get("/search", function (req, res) {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+    res.sendFile(path.join(__dirname, "../public/search.html"));
   })
 
-  app.post("/login",
-    passport.authenticate("local", { failureRedirect: "/login" }),
-    function (req, res) {
-      res.redirect("/");
-    });
+  app.get("/login", function (req, res) {
+    if (req.user) {
+      res.redirect("/profile/:id");
+    }
+    // or whatever you have that page named
+    res.sendFile(path.join(__dirname, "../public/login.html"));
+  });
 };
