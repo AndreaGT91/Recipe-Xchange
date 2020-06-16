@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 
 module.exports = function (app) {
     app.post("/api/login", passport.authenticate("local"), function (req, res) {
-        res.json(req.users);
+        res.json(req.user);
     });
 
     app.post("/api/signup", function (req, res) {
@@ -26,6 +26,19 @@ module.exports = function (app) {
     app.get("/logout", function (req, res) {
         req.logout();
         res.redirect("/");
+    });
+
+    app.get("/profile/:id", function (req, res) {
+        db.Users.findOne({
+            where: {
+                id: req.params.id
+            }
+        }).then(function (dbUser) {
+            res.json(dbUser);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
+        });
     });
 
     app.get("/api/user_data/:id", function (req, res) {
