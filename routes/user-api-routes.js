@@ -1,5 +1,6 @@
 const db = require("../models");
 const passport = require("../config/passport");
+const bcrypt = require("bcryptjs");
 
 module.exports = function (app) {
     app.post("/api/login", passport.authenticate("local"), function (req, res) {
@@ -15,13 +16,11 @@ module.exports = function (app) {
             location: req.body.location,
             aboutMe: req.body.aboutMe,
             imperial: req.body.imperial
-        })
-            .then(function () {
-                res.redirect(307, "/api/login");
-            })
-            .catch(function (err) {
-                res.status(401).json(err);
-            });
+        }).then(function () {
+            res.redirect(307, "/api/login");
+        }).catch(function (err) {
+            res.status(401).json(err);
+        });
     });
 
     app.get("/logout", function (req, res) {
@@ -30,13 +29,16 @@ module.exports = function (app) {
     });
 
     app.get("/api/user_data/:id", function (req, res) {
-      db.Users.findOne({
-          where: {
-              id: req.params.id
-          }
-      }).then(function (dbUser) {
-          res.json(dbUser);
-      });
+        db.Users.findOne({
+            where: {
+                id: req.params.id
+            }
+        }).then(function (dbUser) {
+            res.json(dbUser);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
+        });
     });
 
     app.get("/api/userByEmail/:email", function (req, res) {
@@ -61,6 +63,8 @@ module.exports = function (app) {
     });
 
     app.put("/api/user", function (req, res) {
+        req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null);
+
         db.Users.update(
             req.body,
             {
@@ -69,6 +73,9 @@ module.exports = function (app) {
                 }
             }).then(function (dbUser) {
                 res.json(dbUser);
+            }).catch(function (err) {
+                console.log(err);
+                res.status(401).json(err);
             });
     });
 
@@ -79,6 +86,9 @@ module.exports = function (app) {
             }
         }).then(function (dbUser) {
             res.json(dbUser);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 };

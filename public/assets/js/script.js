@@ -99,6 +99,7 @@ $(document).ready(function () {
       loadUserData(true);
     });
   }
+<<<<<<< HEAD
   // Check for add page
   else if (urlArray.indexOf("add") !== -1) {
     currentPage = "add";
@@ -134,6 +135,76 @@ $(document).ready(function () {
                 ingredientArray = result;
                 toggleUnits();
               });
+=======
+  // If we do have user_id, then we need either Profile or Add/Update pages
+  else {
+    let urlArray = url.split("="); // Could have user_id and recipe_id, just user_id, or neither
+    let UserId = parseInt(urlArray[1]); // user_id is first
+
+    // Get user data
+    $.get("/api/user_data/" + UserId, function (data) {
+      currentUser = data;
+      $("#user-name").text("Welcome " + currentUser.firstName + " " + currentUser.lastName);
+
+      // If ?recipe_id not in URL, then we need Profile page
+      if (url.indexOf("?recipe_id=") === -1) {
+        $("#main-content").load("profile.html", function () {
+          currentPage = "profile";
+          globalSetup();
+
+          // These are just for the Manage Profile page
+          $("#saveUserBtn").click(saveUser);
+          $("#cancelBtn").click(cancelChanges);
+          $(".addBtn").click(addRecipe);
+          $("#username").change(usernameChange);
+          $("#current-password").change(passwordChange);
+          $("#new-password").change(passwordChange);
+          $("#current-password").focus(passwordGetFocus);
+          $("#new-password").focus(passwordGetFocus);
+          $("#current-password").blur(passwordLoseFocus);
+          $("#new-password").blur(passwordLoseFocus);
+
+          loadUserData(true);
+        });
+      }
+      // If we do have recipe_id, then load Add/Update page
+      else {
+        let RecipeId = parseInt(urlArray[2]); // Will be last of 3 sections of URL
+
+        $("#main-content").load("add.html", function () {
+          currentPage = "add";
+          globalSetup();
+
+          // These are just for the Add/Update page
+          $("#saveBtn").click(saveRecipe);
+          $("#resetBtn").click(resetForm);
+          $("#ingredBtn").click(saveIngredient);
+
+          // Retrieve list of categories
+          let newOption;
+          const categoryList = $("#category_list"); // Use datalist, not select, to get down arrows
+
+          $.get("/api/categories", function (data) {
+            data.forEach(item => {
+              newOption = $("<option>");
+              newOption.data("value", item.id); // data-value is category id and is hidden
+              newOption.attr("name", item.id); // name is also id and hidden
+              newOption.val(item.name); // value is category name and is displayed
+              newOption.attr("id", item.name); // used to find option later when saving recipe
+              categoryList.append(newOption);
+
+              // If RecipeId is -1, then we just need blank page; otherwise, get recipe data
+              if (RecipeId !== -1) {
+                $.get("/api/recipes/" + RecipeId, function (data) {
+                  currentRecipe = data;
+                  // Get its ingredients, too
+                  $.get("/api/ingredients/" + RecipeId, function (result) {
+                    ingredientArray = result;
+                    toggleUnits();
+                  });
+                });
+              };
+>>>>>>> 6036a32924e7b142fb539c362663dee6e7fe9087
             });
           };
         });
@@ -1151,6 +1222,14 @@ $(document).on("click", "#searchBtn", function (event) {
       }
     }
 
+    let temperature;
+
+    if ($("#imperial")[0].checked === true) {
+      temperature = recipesArr[0].ovenTempF + "°F";
+    } else {
+      temperature = recipesArr[0].ovenTempC + "°C"
+    }
+
     $(".center").text(recipesArr[0].title);
     $("#recipe-desc").val(recipesArr[0].description);
     $("#desc-label").addClass("active");
@@ -1162,7 +1241,7 @@ $(document).on("click", "#searchBtn", function (event) {
     $("#prep-label").addClass("active");
     $("#cook-time").val(recipesArr[0].cookTime + " mins");
     $("#cook-label").addClass("active");
-    $("#oven-temp").val(recipesArr[0].ovenTempF + "°F");
+    $("#oven-temp").val(temperature);
     $("#temp-label").addClass("active");
     $("#num-servings").val(recipesArr[0].numServings);
     $("#servings-label").addClass("active");
@@ -1179,8 +1258,19 @@ $(document).on("click", "#searchBtn", function (event) {
     $(ingredientTable).empty();
 
     for (let i = 0; i < ingredients.length; i++) {
-      let td1 = $("<td>").text(ingredients[i].imperialQty)
-      let td2 = $("<td>").text(ingredients[i].imperialUnit)
+      let qty;
+      let unit;
+
+      if ($("#imperial")[0].checked === true) {
+        qty = ingredients[i].imperialQty;
+        unit = ingredients[i].imperialUnit;
+      } else {
+        qty = ingredients[i].metricQty;
+        unit = ingredients[i].metricUnit;
+      }
+
+      let td1 = $("<td>").text(qty)
+      let td2 = $("<td>").text(unit)
       let td3 = $("<td>").text(ingredients[i].name)
       let tr = $("<tr>")
 
@@ -1248,6 +1338,14 @@ $(document).on("click", "#nextBtn", function (event) {
 });
 
 function updateSearchDom(currentIndex) {
+  let temperature;
+
+  if ($("#imperial")[0].checked === true) {
+    temperature = recipesArr[currentIndex].ovenTempF + "°F";
+  } else {
+    temperature = recipesArr[currentIndex].ovenTempC + "°C"
+  }
+
   $(".center").text(recipesArr[currentIndex].title);
   $("#recipe-desc").val(recipesArr[currentIndex].description);
   $("#desc-label").addClass("active");
@@ -1259,7 +1357,7 @@ function updateSearchDom(currentIndex) {
   $("#prep-label").addClass("active");
   $("#cook-time").val(recipesArr[currentIndex].cookTime + " mins");
   $("#cook-label").addClass("active");
-  $("#oven-temp").val(recipesArr[currentIndex].ovenTempF + "°F");
+  $("#oven-temp").val(temperature);
   $("#temp-label").addClass("active");
   $("#num-servings").val(recipesArr[currentIndex].numServings);
   $("#servings-label").addClass("active");
@@ -1276,8 +1374,19 @@ function updateSearchDom(currentIndex) {
   $(ingredientTable).empty();
 
   for (let i = 0; i < ingredients.length; i++) {
-    let td1 = $("<td>").text(ingredients[i].imperialQty)
-    let td2 = $("<td>").text(ingredients[i].imperialUnit)
+    let qty;
+    let unit;
+
+    if ($("#imperial")[0].checked === true) {
+      qty = ingredients[i].imperialQty;
+      unit = ingredients[i].imperialUnit;
+    } else {
+      qty = ingredients[i].metricQty;
+      unit = ingredients[i].metricUnit;
+    }
+
+    let td1 = $("<td>").text(qty)
+    let td2 = $("<td>").text(unit)
     let td3 = $("<td>").text(ingredients[i].name)
     let tr = $("<tr>")
 
