@@ -3,11 +3,14 @@ const db = require("../models");
 module.exports = function (app) {
     app.get("/api/ingredients/:id", function (req, res) {
         db.Ingredients.findAll({
-          where: {
-            RecipeId: req.params.id
-          }
+            where: {
+                RecipeId: req.params.id
+            }
         }).then(function (dbIngredients) {
             res.json(dbIngredients);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
@@ -18,6 +21,9 @@ module.exports = function (app) {
             }
         }).then(function (dbIngredient) {
             res.json(dbIngredient);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 
@@ -33,13 +39,12 @@ module.exports = function (app) {
             carbs: req.body.carbs,
             fat: req.body.fat,
             RecipeId: req.body.RecipeId
-        })
-            .then(function (dbIngredient) {
-                res.json(dbIngredient)
-            })
-            .catch(function (err) {
-                res.status(401).json(err);
-            })
+        }).then(function (dbIngredient) {
+            res.json(dbIngredient)
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
+        });
     });
 
     app.put("/api/ingredients", function (req, res) {
@@ -51,6 +56,9 @@ module.exports = function (app) {
                 }
             }).then(function (dbIngredient) {
                 res.json(dbIngredient);
+            }).catch(function (err) {
+                console.log(err);
+                res.status(401).json(err);
             });
     });
 
@@ -61,6 +69,9 @@ module.exports = function (app) {
             }
         }).then(function (dbIngredient) {
             res.json(dbIngredient);
+        }).catch(function (err) {
+            console.log(err);
+            res.status(401).json(err);
         });
     });
 };
