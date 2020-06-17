@@ -1,9 +1,11 @@
 const db = require("../models");
 const passport = require("../config/passport");
 const bcrypt = require("bcryptjs");
+let currentUser = {};
 
 module.exports = function (app) {
     app.post("/api/login", passport.authenticate("local"), function (req, res) {
+        currentUser = req.user;
         res.json(req.user);
     });
 
@@ -16,7 +18,8 @@ module.exports = function (app) {
             location: req.body.location,
             aboutMe: req.body.aboutMe,
             imperial: req.body.imperial
-        }).then(function () {
+        }).then(function (data) {
+            currentUser = data;
             res.redirect(307, "/api/login");
         }).catch(function (err) {
             res.status(401).json(err);
@@ -24,21 +27,9 @@ module.exports = function (app) {
     });
 
     app.get("/logout", function (req, res) {
+        currentUser = {};
         req.logout();
         res.redirect("/");
-    });
-
-    app.get("/profile/:id", function (req, res) {
-        db.Users.findOne({
-            where: {
-                id: req.params.id
-            }
-        }).then(function (dbUser) {
-            res.json(dbUser);
-        }).catch(function (err) {
-            console.log(err);
-            res.status(401).json(err);
-        });
     });
 
     app.get("/api/user_data/:id", function (req, res) {
@@ -47,7 +38,8 @@ module.exports = function (app) {
                 id: req.params.id
             }
         }).then(function (dbUser) {
-            res.json(dbUser);
+          currentUser = dbUser;
+          res.json(dbUser);
         }).catch(function (err) {
             console.log(err);
             res.status(401).json(err);
@@ -60,20 +52,25 @@ module.exports = function (app) {
               email: req.params.email
           }
       }).then(function (dbUser) {
+          currentUser = dbUser;
           res.json(dbUser);
       });
     });
 
-    app.get("/api/user_data", function (req, res) {
-        if (!req.users) {
-            res.json({});
-        } else {
-            res.json({
-                email: req.users.email,
-                id: req.users.id
-            });
-        }
+    app.get("/api/currentuser", function (req, res) {
+      res.json(currentUser);
     });
+
+    // app.get("/api/user_data", function (req, res) {
+    //     if (!req.users) {
+    //         res.json({});
+    //     } else {
+    //         res.json({
+    //             email: req.users.email,
+    //             id: req.users.id
+    //         });
+    //     }
+    // });
 
     app.put("/api/user", function (req, res) {
         req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null);
@@ -85,6 +82,7 @@ module.exports = function (app) {
                     id: req.body.id
                 }
             }).then(function (dbUser) {
+                currentUser = dbUser;
                 res.json(dbUser);
             }).catch(function (err) {
                 console.log(err);
@@ -98,6 +96,7 @@ module.exports = function (app) {
                 id: req.params.id
             }
         }).then(function (dbUser) {
+            currentUser = {};
             res.json(dbUser);
         }).catch(function (err) {
             console.log(err);

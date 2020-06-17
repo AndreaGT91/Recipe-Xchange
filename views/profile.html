@@ -1,105 +1,187 @@
-<div class="row">
-  <!-- Main user profile properties -->
-  <form class="col s12">
-    <div class="row">
-      <div class="col s2">
-        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="saveUserBtn">Save<i
-            class="material-icons left">save_alt</i></button>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Xchange</title>
+
+  <link rel="icon" type="image/png" href="/assets/img/restaurant_menu.png">
+  <!-- Materialize compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Local CSS styling -->
+  <link rel="stylesheet" href="/assets/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div class="navbar-fixed">
+    <!-- Dropdown menu for navbar -->
+    <ul id="menu-dropdown" class="dropdown-content">
+      <li><a href="/" class="li-search">Search Recipes</a></li>
+      <li><a href="/add" class="li-add">Add Recipe</a></li>
+      <li><a href="/profile" class="li-profile active">Manage Profile</a></li>
+      <li class="divider"></li>
+      <li><a href="/logout">Sign Out</a></li>
+    </ul>
+    <nav class="teal darken-4">
+      <div class="nav-wrapper">
+        <div class="switch">
+          <label class="white-text">
+            <span class="hide-on-small-only">Metric</span>
+            <input type="checkbox" checked id="imperial">
+            <span class="lever"></span>
+            <span class="hide-on-small-only">Imperial</span>
+          </label>
+          <a class="brand-logo center white-text">Recipe Xchange</a>
+          <a href="/login" class="right" id="sign-in"><i class="material-icons right">login</i>
+            <span class="hide-on-small-only">Sign In</span></a>
+          <a class="dropdown-trigger right hide-on-med-and-down" data-target="menu-dropdown" id="user-name"
+            hidden>Welcome!<i class="material-icons right">arrow_drop_down</i></a>
+          <a data-target="mobile-demo" class="sidenav-trigger right" id="mobile-menu" hidden>
+            <i class="material-icons">menu</i></a>
+        </div>
       </div>
-      <div class="col s8">
-        <h5 class="center">Manage Profile</h5>
-      </div>
-      <div class="col s2">
-        <button class="btn waves-effect waves-light teal darken-4 right" type="reset" id="cancelBtn">Cancel<i
-            class="material-icons left">clear</i></button>
+    </nav>
+  </div>
+
+  <!-- Dropdown menu for navbar when mobile -->
+  <ul class="sidenav sidenav-close" id="mobile-demo">
+    <li><a href="/" class="li-search">Search Recipes</a></li>
+    <li><a href="/add" class="li-add">Add Recipe</a></li>
+    <li><a href="/profile" class="li-profile active">Manage Profile</a></li>
+    <li class="divider"></li>
+    <li><a href="/logout">Sign Out</a></li>
+  </ul>
+
+  <main class="background">
+    <div class="container main-container">
+      <div id="main-content">
+        <div class="row">
+          <!-- Main user profile properties -->
+          <form class="col s12">
+            <div class="row">
+              <div class="col s2">
+                <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action"
+                  id="saveUserBtn">Save<i class="material-icons left">save_alt</i></button>
+              </div>
+              <div class="col s8">
+                <h5 class="center">Manage Profile</h5>
+              </div>
+              <div class="col s2">
+                <button class="btn waves-effect waves-light teal darken-4 right" type="reset" id="cancelBtn">Cancel<i
+                    class="material-icons left">clear</i></button>
+              </div>
+            </div>
+            <div class="row">
+              <!-- first column of user data -->
+              <div class="col s12 m6">
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="username" type="email" class="validate" required>
+                    <label for="username">Email/Username</label>
+                    <span class="helper-text" data-error="Invalid email format"></span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="current-password" type="password">
+                    <label for="current-password">Password</label>
+                    <span class="helper-text red-text" id="current-password-msg"></span>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="new-password" type="password">
+                    <label for="new-password">Confirm Password</label>
+                    <span class="helper-text red-text" id="new-password-msg"></span>
+                  </div>
+                </div>
+              </div> <!-- first column of user data -->
+              <div class="col s12 m6">
+                <!-- second column of user data -->
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="first-name" type="text" required>
+                    <label for="first-name">First Name</label>
+                    <span class="helper-text"></span> <!-- Dummy to make alignment correct -->
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="last-name" type="text">
+                    <label for="last-name">Last Name</label>
+                    <span class="helper-text"></span> <!-- Dummy to make alignment correct -->
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input id="location" type="text">
+                    <label for="location">Location</label>
+                    <span class="helper-text"></span> <!-- Dummy to make alignment correct -->
+                  </div>
+                </div>
+              </div> <!-- second column of user data -->
+            </div> <!-- main info row -->
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea id="about-me" class="materialize-textarea"></textarea>
+                <label for="about-me">About Me</label>
+              </div>
+            </div> <!-- about me row -->
+          </form> <!-- profile form -->
+        </div> <!-- main user profile properties -->
+
+        <!-- Table title and button to add more recipes -->
+        <div class="row">
+          <div class="col s10">
+            <h6>Your Recipes:</h6>
+          </div>
+          <div class="col s2">
+            <button class="btn waves-effect waves-light teal darken-4 right addBtn" type="button">Add Recipe<i
+                class="material-icons left">plus_one</i></button>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Recipe table -->
+          <div class="col s12">
+            <table class="striped responsive-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Date Added</th>
+                  <th>Public</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="recipe-body">
+                <!-- Table rows added in javascript -->
+              </tbody>
+            </table>
+          </div>
+        </div> <!-- recipe table row -->
+        <br>
       </div>
     </div>
-    <div class="row">
-      <!-- first column of user data -->
-      <div class="col s12 m6">
-        <div class="row">
-          <div class="input-field col s12">
-            <input id="username" type="email" class="validate" required>
-            <label for="username">Email/Username</label>
-            <span class="helper-text" data-error="Invalid email format"></span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="input-field col s12">
-            <input id="current-password" type="password">
-            <label for="current-password">Password</label>
-            <span class="helper-text red-text" id="current-password-msg"></span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="input-field col s12">
-            <input id="new-password" type="password">
-            <label for="new-password">Confirm Password</label>
-            <span class="helper-text red-text" id="new-password-msg"></span>
-          </div>
-        </div>
-      </div> <!-- first column of user data -->
-      <div class="col s12 m6">
-        <!-- second column of user data -->
-        <div class="row">
-          <div class="input-field col s12">
-            <input id="first-name" type="text" required>
-            <label for="first-name">First Name</label>
-            <span class="helper-text"></span> <!-- Dummy to make alignment correct -->
-          </div>
-        </div>
-        <div class="row">
-          <div class="input-field col s12">
-            <input id="last-name" type="text">
-            <label for="last-name">Last Name</label>
-            <span class="helper-text"></span> <!-- Dummy to make alignment correct -->
-          </div>
-        </div>
-        <div class="row">
-          <div class="input-field col s12">
-            <input id="location" type="text">
-            <label for="location">Location</label>
-            <span class="helper-text"></span> <!-- Dummy to make alignment correct -->
-          </div>
-        </div>
-      </div> <!-- second column of user data -->
-    </div> <!-- main info row -->
-    <div class="row">
-      <div class="input-field col s12">
-        <textarea id="about-me" class="materialize-textarea"></textarea>
-        <label for="about-me">About Me</label>
-      </div>
-    </div> <!-- about me row -->
-  </form> <!-- profile form -->
-</div> <!-- main user profile properties -->
+  </main>
 
-<!-- Table title and button to add more recipes -->
-<div class="row">
-  <div class="col s10">
-    <h6>Your Recipes:</h6>
-  </div>
-  <div class="col s2">
-    <button class="btn waves-effect waves-light teal darken-4 right addBtn" type="button">Add Recipe<i
-        class="material-icons left">plus_one</i></button>
-  </div>
-</div>
+  <footer class="page-footer teal darken-4">
+    <div class="footer-copyright white-text">
+      © 2020 Copyright JAK
+      <a class="grey-text right" href="https://spoonacular.com/food-api">Powered by spoonacular API</a>
+      <a class="grey-text right" href="https://www.freepik.com/free-photos-vectors/background">
+        Background photo created by mrsiraphol - www.freepik.com</a>
+    </div>
+  </footer>
 
-<div class="row">
-  <!-- Recipe table -->
-  <div class="col s12">
-    <table class="striped responsive-table">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Date Added</th>
-          <th>Public</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="recipe-body">
-        <!-- Table rows added in javascript -->
-      </tbody>
-    </table>
-  </div>
-</div> <!-- recipe table row -->
-<br>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <!-- Compiled and minified JavaScript for Materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- Local javascript -->
+  <script src="/assets/js/profile.js"></script>
+</body>
+
+</html>

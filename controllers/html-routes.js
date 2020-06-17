@@ -3,24 +3,23 @@ const passport = require("passport")
 
 module.exports = function (app) {
   app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "../views/index.html/?search"));
+    res.sendFile(path.join(__dirname, "../views/index.html"));
   });
 
-  app.get("/profile/:id", function (req, res) {
-    res.sendFile(path.join(__dirname, `../views/index.html/?profile?user_id=${req.params.id}`));
+  app.get("/profile", function (req, res) {
+    res.sendFile(path.join(__dirname, "../views/profile.html"));
   })
 
-  app.get("/search/:id", function (req, res) {
-    res.sendFile(path.join(__dirname, `../views/index.html/?search?user_id=${req.params.id}`));
+  app.get("/search", function (req, res) {
+    res.sendFile(path.join(__dirname, "../views/index.html"));
   })
 
-  app.get("/add/:user_id/:recipe_id", function (req, res) {
-    res.sendFile(path.join(__dirname, 
-      `../views/index.html/?add?user_id=${req.params.user_id}?recipe_id=${req.params.recipe_id}`));
+  app.get("/add", function (req, res) {
+    res.sendFile(path.join(__dirname, "../views/add.html"));
   })
 
   app.get("/login", function (req, res) {
-    res.sendFile(path.join(__dirname, "../views/index.html/?login"));
+    res.sendFile(path.join(__dirname, "../views/login.html"));
   });
   
 };
