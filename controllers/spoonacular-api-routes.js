@@ -8,7 +8,7 @@ const apiGetConversion = `https://api.spoonacular.com/recipes/convert?apiKey=${s
 const headers = { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
 
 module.exports = function (app) {
-    app.get("/api/getConversion", function (req, res) {
+    app.post("/api/getConversion", function (req, res) {
         axios.get(apiGetConversion, {
             params: {
                 ingredientName: req.body.name,
