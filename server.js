@@ -14,12 +14,12 @@ app.use(session({ secret: "keyboard cat", resave: true, saveUninitialized: true 
 app.use(passport.initialize());
 app.use(passport.session());
 
-require("./routes/html-routes.js")(app);
-require("./routes/user-api-routes.js")(app);
-require("./routes/recipe-api-routes.js")(app);
-require("./routes/ingredients-api-routes.js")(app);
-require("./routes/categories-api-routes.js")(app);
-require("./routes/spoonacular-api-routes.js")(app);
+require("./controllers/html-routes.js")(app);
+require("./controllers/user-api-routes.js")(app);
+require("./controllers/recipe-api-routes.js")(app);
+require("./controllers/ingredients-api-routes.js")(app);
+require("./controllers/categories-api-routes.js")(app);
+require("./controllers/spoonacular-api-routes.js")(app);
 
 db.sequelize.sync().then(function () {
     console.log(`PID: ${pid}\n`);
