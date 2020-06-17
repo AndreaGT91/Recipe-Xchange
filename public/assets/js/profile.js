@@ -3,7 +3,7 @@ let isImperial = true;
 let currentUser = {};
 let currentRecipe = {};
 let recipeArray = [];
-let changedPassword = ""; // Temporary holding variable during password change
+let changedPassword = false;
 
 // Html for buttons
 const delButtonHtml = `<button class="btn waves-effect waves-light teal darken-4 deleteBtn"><i
@@ -14,10 +14,7 @@ const publicCheckedHtml = `<i class="material-icons">check</i>`;
 const publicUncheckedHtml = `<i class="material-icons">not_interested</i>`;
 
 $(document).ready(function () {
-<<<<<<< HEAD
   // Materialize initialization
-=======
->>>>>>> 42f8e5bbe70a29b4302a39661dc4b2567548c1f1
   $(".dropdown-trigger").dropdown();
   $("select").formSelect();
   
@@ -65,10 +62,11 @@ function saveUser(event) {
 
   $.ajax({
     method: "PUT",
-    url: "/api/user",
+    url: "/api/user/" + changedPassword,
     data: currentUser
   })
   .done(function () {
+    changedPassword = false;
     loadUserData(false);
     // TODO: Use something other than alert
     alert("Profile updated.");
@@ -119,13 +117,15 @@ function passwordGetFocus(event) {
 function passwordLoseFocus(event) {
   event.target.type = "password"; // Change back to being masked
 
-  // If changedPassword still blank, no change was made
-  if (changedPassword === "") {
+  // If changedPassword still false, no change was made
+  if (!changedPassword) {
     event.target.value = currentUser.password;
     M.updateTextFields();
   }
   // Make sure password is not blank
   else if (event.target.value.trim() === "") {
+    changedPassword = false;
+
     // Set helper text for correct field, stop event propagation, then reset focus
     if (event.target.id === "current-password") {
       $("#current-password-msg").text("Password cannot be blank.");
@@ -140,19 +140,21 @@ function passwordLoseFocus(event) {
   }
   // Otherwise, if fields are equal, need to update user password
   else if ($("#current-password").val() === $("#new-password").val()) {
+    changedPassword = true; // redundant, but just for good measure
     currentUser.password = event.target.value.trim();
-    changedPassword = "";
     // Clear these out, just in case still set
     $("#current-password-msg").text("");
     $("#new-password-msg").text("");
   }
   // Otherwise, need to make user enter same password in other field
   else if (event.target.id === "current-password") {
+    changedPassword = false;
     $("#current-password-msg").text("");
     $("#new-password-msg").text("Passwords must match.");
     $("#new-password").focus();
   }
   else {
+    changedPassword = false;
     $("#new-password-msg").text("");
     $("#current-password-msg").text("Passwords must match.");
     $("#current-password").focus();
@@ -161,7 +163,7 @@ function passwordLoseFocus(event) {
 
 // On change for Password fields
 function passwordChange(event) {
-  changedPassword = event.target.value.trim();
+  changedPassword = true;
 };
 
 // On click for Add Recipe button on Profile page
@@ -213,8 +215,8 @@ function deleteRecipe(event) {
 function loadUserData(loadRecipes) {
   $("#user-name").text("Welcome " + currentUser.firstName + " " + currentUser.lastName);
   $("#username").val(currentUser.email);
-  // $("#current-password").val(currentUser.password);
-  // $("#new-password").val(currentUser.password);
+  $("#current-password").val(currentUser.password);
+  $("#new-password").val(currentUser.password);
 
   $("#first-name").val(currentUser.firstName);
   $("#last-name").val(currentUser.lastName);
