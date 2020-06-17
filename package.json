@@ -4,6 +4,7 @@
   "description": "App for saving and searching recipes with nutritional information calculated and provided.",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
