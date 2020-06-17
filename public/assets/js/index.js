@@ -5,7 +5,7 @@ $(document).ready(function () {
   getCategories();
 
   // Get current user information
-  $.get("/api/currentuser", function(data) {
+  $.get("/api/currentuser", function (data) {
     // If user logged in, update navbar
     if (data.id) {
       let currentUser = data;
@@ -87,6 +87,20 @@ let recipesArr = [];
 
 $(document).on("click", "#searchBtn", function (event) {
   event.preventDefault();
+  $("#recipeTitle").empty();
+  $("#recipe-desc").empty();
+  $("#submitted-by").empty();
+  $("#source").empty();
+  $("#prep-time").empty();
+  $("#cook-time").empty();
+  $("#oven-temp").empty();
+  $("#num-servings").empty();
+  $("#ingredient-table").empty();
+  $("#instructions").empty();
+  $("#calories").empty();
+  $("#protein").empty();
+  $("#carbohydrates").empty();
+  $("#fat").empty();
 
   let category = $(".categoriesOptions").val();
   let title = $("#keyword").val().trim();
@@ -156,7 +170,7 @@ $(document).on("click", "#searchBtn", function (event) {
       temperature = recipesArr[0].ovenTempC + "°C"
     }
 
-    $(".center").text(recipesArr[0].title);
+    $("#recipeTitle").text(recipesArr[0].title);
     $("#recipe-desc").val(recipesArr[0].description);
     $("#desc-label").addClass("active");
     $("#submitted-by").val(recipesArr[0].User.firstName + " " + recipesArr[0].User.lastName);
@@ -276,7 +290,7 @@ function updateSearchDom(currentIndex) {
     temperature = recipesArr[currentIndex].ovenTempC + "°C"
   }
 
-  $(".center").text(recipesArr[currentIndex].title);
+  $("#recipeTitle").text(recipesArr[currentIndex].title);
   $("#recipe-desc").val(recipesArr[currentIndex].description);
   $("#desc-label").addClass("active");
   $("#submitted-by").val(recipesArr[currentIndex].User.firstName + " " + recipesArr[currentIndex].User.lastName);
