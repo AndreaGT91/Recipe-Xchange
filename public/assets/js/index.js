@@ -101,6 +101,7 @@ $(document).on("click", "#searchBtn", function (event) {
   $("#protein").empty();
   $("#carbohydrates").empty();
   $("#fat").empty();
+  recipesArr = [];
 
   let category = $(".categoriesOptions").val();
   let title = $("#keyword").val().trim();
