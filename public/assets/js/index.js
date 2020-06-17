@@ -345,10 +345,10 @@ function updateSearchDom(currentIndex) {
     totalCarbs += parseInt(ingredients[i].carbs)
     totalFat += parseInt(ingredients[i].fat)
 
-    let calories = totalCalories / recipesArr[currentIndex].numServings;
-    let protein = totalProtein / recipesArr[currentIndex].numServings;
-    let carbs = totalCarbs / recipesArr[currentIndex].numServings;
-    let fat = totalFat / recipesArr[currentIndex].numServings;
+    let calories = Math.round(totalCalories / recipesArr[currentIndex].numServings);
+    let protein = Math.round(totalProtein / recipesArr[currentIndex].numServings);
+    let carbs = Math.round(totalCarbs / recipesArr[currentIndex].numServings);
+    let fat = Math.round(totalFat / recipesArr[currentIndex].numServings);
     $("#calories").val(calories);
     $("#calories-label").addClass("active");
     $("#protein").val(protein);

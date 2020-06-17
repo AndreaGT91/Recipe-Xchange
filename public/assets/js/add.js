@@ -173,7 +173,7 @@ function loadRecipeData() {
     $(".deleteBtn").click(deleteIngredient);
     $("tr").click(editIngredient);
 
-    calculateNutrition();
+    calculateNutrition(currentRecipe.numServings);
   };
 };
 
@@ -202,10 +202,10 @@ function calculateNutrition(numServings) {
   });
 
   // Nutrition info is per serving
-  calories /= numServ;
-  protein /= numServ;
-  carbohydrates /= numServ;
-  fat /= numServ;
+  calories = Math.round(calories / numServ);
+  protein = Math.round(protein / numServ);
+  carbohydrates = Math.round(carbohydrates / numServ);
+  fat = Math.round(fat / numServ);
 
   // Update display fields
   $("#calories").val(calories);
