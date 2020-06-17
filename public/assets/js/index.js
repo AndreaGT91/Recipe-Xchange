@@ -234,6 +234,10 @@ $(document).on("click", "#searchBtn", function (event) {
 
 let currentIndex = 0;
 
+$(document).on("click", "#imperial", function (event) {
+  updateSearchDom(currentIndex);
+});
+
 $(document).on("click", "#prevBtn", function (event) {
   event.stopPropagation();
 

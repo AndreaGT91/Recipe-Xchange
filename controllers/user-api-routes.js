@@ -72,8 +72,10 @@ module.exports = function (app) {
     //     }
     // });
 
-    app.put("/api/user", function (req, res) {
-        req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null);
+    app.put("/api/user/:updatePassword", function (req, res) {
+        if (req.params.updatePassword == "true") {
+          req.body.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null);
+        };
 
         db.Users.update(
             req.body,
