@@ -14,6 +14,10 @@ const publicCheckedHtml = `<i class="material-icons">check</i>`;
 const publicUncheckedHtml = `<i class="material-icons">not_interested</i>`;
 
 $(document).ready(function () {
+  // Materialize initialization
+  $(".dropdown-trigger").dropdown();
+  $("select").formSelect();
+  
   $("#saveUserBtn").click(saveUser);
   $("#cancelBtn").click(cancelChanges);
   $(".addBtn").click(addRecipe);
