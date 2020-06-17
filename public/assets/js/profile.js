@@ -14,7 +14,10 @@ const publicCheckedHtml = `<i class="material-icons">check</i>`;
 const publicUncheckedHtml = `<i class="material-icons">not_interested</i>`;
 
 $(document).ready(function () {
+<<<<<<< HEAD
   // Materialize initialization
+=======
+>>>>>>> 42f8e5bbe70a29b4302a39661dc4b2567548c1f1
   $(".dropdown-trigger").dropdown();
   $("select").formSelect();
   
@@ -210,8 +213,8 @@ function deleteRecipe(event) {
 function loadUserData(loadRecipes) {
   $("#user-name").text("Welcome " + currentUser.firstName + " " + currentUser.lastName);
   $("#username").val(currentUser.email);
-  $("#current-password").val(currentUser.password);
-  $("#new-password").val(currentUser.password);
+  // $("#current-password").val(currentUser.password);
+  // $("#new-password").val(currentUser.password);
 
   $("#first-name").val(currentUser.firstName);
   $("#last-name").val(currentUser.lastName);
