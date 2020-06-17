@@ -2,6 +2,7 @@ let currentUser = {};
 
 $(document).ready(function () {
   $("#loginBtn").click(loginUser);
+  $("#forgotBtn").click(forgotPassword);
   $("#cancelBtn").click(cancelLogin);
   $("#emailLogin").change(emailChange);
   $("#passwordLogin").focus(passwordGetFocus);
@@ -48,6 +49,42 @@ function loginUser(event) {
       alert("Invalid password for " + currentUser.email);
       $("#passwordLogin").focus();
     });
+  };
+};
+
+function forgotPassword(event) {
+  // TODO: Need to actually do verification. Added this just for testing purposes
+  if (currentUser === {}) {
+    alert("Enter email address first.");
+    $("#emailLogin").focus();
+  }
+  else {
+    let newPassword = prompt("Please enter new password:");
+    if (newPassword == null || newPassword == "") {
+      cancelLogin(event);
+    } 
+    else if (newPassword.trim() === "") {
+      alert("Password cannot be blank.");
+    }
+    else {
+      currentUser.password = newPassword;
+
+      $.ajax({
+        method: "PUT",
+        url: "/api/user/" + true,
+        data: currentUser
+      })
+      .done(function () {
+        // TODO: Use something other than alert
+        $("#passwordLogin").val(newPassword);
+        M.updateTextFields();
+        alert("Password updated.");
+      })
+      .fail(function () {
+        // TODO: Use something other than alert
+        alert("Unable to update password.");
+      });
+    };
   };
 };
 

@@ -316,8 +316,9 @@ function saveRecipe(event) {
   // Function to handle categories
   function getCategory(categoryName) {
     let catName = categoryName.trim();
-    if (catName === "") {
-      return null
+
+    if ((catName === "") || (catName === null) || (catName === undefined)) {
+      return 0
     }
     else {
       // Capitalize first letter of each word, lowercase the rest
@@ -338,22 +339,22 @@ function saveRecipe(event) {
         $.post("/api/addcategory", {
           name: catName
         })
-          .done(function (data) {
-            // Add new category to category_list
-            let newOption = $("<option>");
-            newOption.data("value", data.id); // data-value is category id and is hidden
-            newOption.attr("name", data.id); // name is also id and hidden
-            newOption.val(catName); // value is category name and is displayed
-            newOption.attr("id", catName); // used to find option later when saving recipe
-            $("#category_list").append(newOption);
+        .done(function (data) {
+          // Add new category to category_list
+          let newOption = $("<option>");
+          newOption.data("value", data.id); // data-value is category id and is hidden
+          newOption.attr("name", data.id); // name is also id and hidden
+          newOption.val(catName); // value is category name and is displayed
+          newOption.attr("id", catName); // used to find option later when saving recipe
+          $("#category_list").append(newOption);
 
-            return data.id
-          })
-          .fail(function (error) {
-            // TODO: Use something other than alert
-            alert("Could not add category ", catName);
-            return null
-          });
+          return data.id
+        })
+        .fail(function (error) {
+          // TODO: Use something other than alert
+          alert("Could not add category ", catName);
+          return 0
+        });
       };
     };
   };
@@ -394,14 +395,6 @@ function saveRecipe(event) {
 
   // Update existing recipe
   if (currentRecipe.id) {
-    if (currentRecipe.category2 === "" || currentRecipe.category2 === null || currentRecipe.category2 === undefined) {
-      currentRecipe.category2 = 0
-    }
-
-    if (currentRecipe.category3 === "" || currentRecipe.category3 === null || currentRecipe.category3 === undefined) {
-      currentRecipe.category3 = 0
-    }
-
     $.ajax({
       method: "PUT",
       url: "/api/recipes",
@@ -418,44 +411,36 @@ function saveRecipe(event) {
   }
   // Add new recipe
   else {
-    if (currentRecipe.category2 === "" || currentRecipe.category2 === null || currentRecipe.category2 === undefined) {
-      currentRecipe.category2 = 0
-    }
-
-    if (currentRecipe.category3 === "" || currentRecipe.category3 === null || currentRecipe.category3 === undefined) {
-      currentRecipe.category3 = 0
-    }
-
     $.post("/api/addrecipe", currentRecipe)
-      .done(function (data) {
-        currentRecipe = data;
+    .done(function (data) {
+      currentRecipe = data;
 
-        if (ingredientArray.length > 0) {
-          // Set RecipeId for each ingredient
-          ingredientArray.forEach(item => item.RecipeId = currentRecipe.id);
-          console.log(ingredientArray)
+      if (ingredientArray.length > 0) {
+        // Set RecipeId for each ingredient
+        ingredientArray.forEach(item => item.RecipeId = currentRecipe.id);
+        console.log(ingredientArray)
 
-          $.post("/api/addingredient", ingredientArray)
-            .done(function () {
-              loadRecipeData();
-              // TODO: Use something other than alert
-              alert("Recipe added!");
-            })
-            .fail(function (error) {
-              // TODO: Use something other than alert
-              alert("Error adding ingredients: ", error);
-            });
-        }
-        else {
-          loadRecipeData();
-          // TODO: Use something other than alert
-          alert("Recipe added!");
-        };
-      })
-      .fail(function (error) {
+        $.post("/api/addingredient", ingredientArray)
+          .done(function () {
+            loadRecipeData();
+            // TODO: Use something other than alert
+            alert("Recipe added!");
+          })
+          .fail(function (error) {
+            // TODO: Use something other than alert
+            alert("Error adding ingredients: ", error);
+          });
+      }
+      else {
+        loadRecipeData();
         // TODO: Use something other than alert
-        alert("Error adding recipe: ", error);
-      });
+        alert("Recipe added!");
+      };
+    })
+    .fail(function (error) {
+      // TODO: Use something other than alert
+      alert("Error adding recipe: ", error);
+    });
   };
 };
 
