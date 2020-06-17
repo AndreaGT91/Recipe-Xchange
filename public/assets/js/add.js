@@ -569,7 +569,6 @@ function saveIngredient(event) {
           sourceUnit: sourceUnit,
           targetUnit: targetUnit
         }, function (res) {
-          console.log(res)
           // Set quantity/unit fields with converted data
           if (isImperial) {
             currentIngredient.metricQty = res.targetAmount;
