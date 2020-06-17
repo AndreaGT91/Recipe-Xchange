@@ -17,10 +17,10 @@ const delButtonHtml = `<button class="btn waves-effect waves-light teal darken-4
 // Code to run once DOM is fully loaded
 $(document).ready(function () {
   // Get current user information
-  $.get("/api/currentuser", function(data) {
+  $.get("/api/currentuser", function (data) {
     // Must be logged in to be on this page
     if (!data.id) {
-        window.location.replace("/login");
+      window.location.replace("/login");
     }
     else {
       currentUser = data;
@@ -46,7 +46,7 @@ $(document).ready(function () {
       let newOption;
       const categoryList = $("#category_list"); // Use datalist, not select, to get down arrows
 
-      $.get("/api/categories", function(data) {
+      $.get("/api/categories", function (data) {
         data.forEach(item => {
           newOption = $("<option>");
           newOption.data("value", item.id); // data-value is category id and is hidden
@@ -56,7 +56,7 @@ $(document).ready(function () {
           categoryList.append(newOption);
         });
 
-        $.get("/api/currentrecipe", function(data) {
+        $.get("/api/currentrecipe", function (data) {
           if (!data.id) {
             currentRecipe = {};
           }
@@ -165,10 +165,7 @@ function loadRecipeData() {
       newRow.append($("<td>").html(qty));
       newRow.append($("<td>").html(unit))
       newRow.append($("<td>").html(item.name));
-      // Add Delete button if on Add/Update page only
-      if (currentPage === "add") {
-        newRow.append($("<td>").html(delButtonHtml));
-      }
+      newRow.append($("<td>").html(delButtonHtml));
       ingredTable.append(newRow);
     });
 
@@ -397,6 +394,14 @@ function saveRecipe(event) {
 
   // Update existing recipe
   if (currentRecipe.id) {
+    if (currentRecipe.category2 === "" || currentRecipe.category2 === null || currentRecipe.category2 === undefined) {
+      currentRecipe.category2 = 0
+    }
+
+    if (currentRecipe.category3 === "" || currentRecipe.category3 === null || currentRecipe.category3 === undefined) {
+      currentRecipe.category3 = 0
+    }
+
     $.ajax({
       method: "PUT",
       url: "/api/recipes",
@@ -413,35 +418,44 @@ function saveRecipe(event) {
   }
   // Add new recipe
   else {
+    if (currentRecipe.category2 === "" || currentRecipe.category2 === null || currentRecipe.category2 === undefined) {
+      currentRecipe.category2 = 0
+    }
+
+    if (currentRecipe.category3 === "" || currentRecipe.category3 === null || currentRecipe.category3 === undefined) {
+      currentRecipe.category3 = 0
+    }
+
     $.post("/api/addrecipe", currentRecipe)
-    .done(function (data) {
-      currentRecipe = data;
+      .done(function (data) {
+        currentRecipe = data;
 
-      if (ingredientArray.length > 0) {
-        // Set RecipeId for each ingredient
-        ingredientArray.forEach(item => item.RecipeId = currentRecipe.id);
+        if (ingredientArray.length > 0) {
+          // Set RecipeId for each ingredient
+          ingredientArray.forEach(item => item.RecipeId = currentRecipe.id);
+          console.log(ingredientArray)
 
-        $.post("/api/addingredient", ingredientArray)
-          .done(function () {
-            loadRecipeData();
-            // TODO: Use something other than alert
-            alert("Recipe added!");
-          })
-          .fail(function (error) {
-            // TODO: Use something other than alert
-            alert("Error adding ingredients: ", error);
-          });
-      }
-      else {
-        loadRecipeData();
+          $.post("/api/addingredient", ingredientArray)
+            .done(function () {
+              loadRecipeData();
+              // TODO: Use something other than alert
+              alert("Recipe added!");
+            })
+            .fail(function (error) {
+              // TODO: Use something other than alert
+              alert("Error adding ingredients: ", error);
+            });
+        }
+        else {
+          loadRecipeData();
+          // TODO: Use something other than alert
+          alert("Recipe added!");
+        };
+      })
+      .fail(function (error) {
         // TODO: Use something other than alert
-        alert("Recipe added!");
-      };
-    })
-    .fail(function (error) {
-      // TODO: Use something other than alert
-      alert("Error adding recipe: ", error);
-    });
+        alert("Error adding recipe: ", error);
+      });
   };
 };
 
@@ -539,80 +553,80 @@ function saveIngredient(event) {
   $.post("/api/ingredInfo", {
     ingredList: ingredList
   })
-  .done(function (response) {
-    // Then, retrieve all the nutrition info
-    const nutrients = response[0].nutrition.nutrients; // array of nutrient info
-    currentIngredient.calories = Math.round(nutrients.find(item => item.title === "Calories").amount);
-    currentIngredient.protein = Math.round(nutrients.find(item => item.title === "Protein").amount);
-    currentIngredient.carbs = Math.round(nutrients.find(item => item.title === "Carbohydrates").amount);
-    currentIngredient.fat = Math.round(nutrients.find(item => item.title === "Fat").amount);
+    .done(function (response) {
+      // Then, retrieve all the nutrition info
+      const nutrients = response[0].nutrition.nutrients; // array of nutrient info
+      currentIngredient.calories = Math.round(nutrients.find(item => item.title === "Calories").amount);
+      currentIngredient.protein = Math.round(nutrients.find(item => item.title === "Protein").amount);
+      currentIngredient.carbs = Math.round(nutrients.find(item => item.title === "Carbohydrates").amount);
+      currentIngredient.fat = Math.round(nutrients.find(item => item.title === "Fat").amount);
 
-    // Finally, do call to get imperial/metric conversion
-    $.get("/api/getConversion", 
-      {
-        name: currentIngredient.name,
-        sourceAmount: sourceAmount,
-        sourceUnit: sourceUnit,
-        targetUnit: targetUnit
-      }, function (req, res) {
-        // Set quantity/unit fields with converted data
-        if (isImperial) {
-          currentIngredient.metricQty = res.targetAmount;
-          currentIngredient.metricUnit = res.targetUnit;
-        }
-        else {
-          currentIngredient.imperialQty = res.targetAmount;
-          currentIngredient.imperialUnit = res.targetUnit;
-        };
-
-        // Time to save: determine if we are updating existing ingredient
-        if (editingIngredient) {
-          // If editing existing recipe, go ahead and update the database
-          if (currentRecipe.id) {
-            $.ajax({
-              method: "PUT",
-              url: "/api/ingredients",
-              data: currentIngredient
-            })
-            .done(function () {
-              updateIngredient();
-            })
-            .fail(function (error) {
-              // TODO: use something other than alert
-              alert("Could not update ingredient. Error code " + error);
-            });
+      // Finally, do call to get imperial/metric conversion
+      $.post("/api/getConversion",
+        {
+          name: currentIngredient.name,
+          sourceAmount: sourceAmount,
+          sourceUnit: sourceUnit,
+          targetUnit: targetUnit
+        }, function (req, res) {
+          // Set quantity/unit fields with converted data
+          if (isImperial) {
+            currentIngredient.metricQty = res.targetAmount;
+            currentIngredient.metricUnit = res.targetUnit;
           }
-          // If adding a new recipe, we don't save ingredient in database until recipe saved
           else {
-            updateIngredient();
+            currentIngredient.imperialQty = res.targetAmount;
+            currentIngredient.imperialUnit = res.targetUnit;
           };
-        }
-        // Adding new ingredient to existing recipe, go ahead and save to database
-        else if (currentRecipe.id) {
-          currentIngredient.RecipeId = currentRecipe.id;
 
-          $.post("/api/addingredient", currentIngredient)
-          .done(function (data) {
-            currentIngredient = data;
+          // Time to save: determine if we are updating existing ingredient
+          if (editingIngredient) {
+            // If editing existing recipe, go ahead and update the database
+            if (currentRecipe.id) {
+              $.ajax({
+                method: "PUT",
+                url: "/api/ingredients",
+                data: currentIngredient
+              })
+                .done(function () {
+                  updateIngredient();
+                })
+                .fail(function (error) {
+                  // TODO: use something other than alert
+                  alert("Could not update ingredient. Error code " + error);
+                });
+            }
+            // If adding a new recipe, we don't save ingredient in database until recipe saved
+            else {
+              updateIngredient();
+            };
+          }
+          // Adding new ingredient to existing recipe, go ahead and save to database
+          else if (currentRecipe.id) {
+            currentIngredient.RecipeId = currentRecipe.id;
+
+            $.post("/api/addingredient", currentIngredient)
+              .done(function (data) {
+                currentIngredient = data;
+                addIngredient();
+                // TODO: Use something other than alert
+                alert("Added ingredient.");
+              })
+              .fail(function (error) {
+                // TODO: Use something other than alert
+                alert("Could not add ingredient. Error code ", error);
+              });
+          }
+          // Adding new ingredient to new recipe, don't save to database yet
+          else {
             addIngredient();
-            // TODO: Use something other than alert
-            alert("Added ingredient.");
-          })
-          .fail(function (error) {
-            // TODO: Use something other than alert
-            alert("Could not add ingredient. Error code ", error);
-          });
-        }
-        // Adding new ingredient to new recipe, don't save to database yet
-        else {
-          addIngredient();
-        };
+          };
+        });
+    })
+    .fail(function (error) {
+      // TODO: Use something other than alert
+      alert("Could not retrieve nutrition information. Error code ", error);
     });
-  })
-  .fail(function (error) {
-    // TODO: Use something other than alert
-    alert("Could not retrieve nutrition information. Error code ", error);
-  });
 };
 
 // Ingredient Delete click event - deletes selected ingredient
@@ -645,12 +659,12 @@ function deleteIngredient(event) {
         method: "DELETE",
         url: "/api/ingredients/" + ingredId
       })
-      .done(function () {
-      })
-      .fail(function (error) {
-        // TODO: use something other than alert
-        alert("Could not delete ingredient. Error code " + error);
-      });
+        .done(function () {
+        })
+        .fail(function (error) {
+          // TODO: use something other than alert
+          alert("Could not delete ingredient. Error code " + error);
+        });
     };
   };
 };
