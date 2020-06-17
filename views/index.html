@@ -19,9 +19,9 @@
   <div class="navbar-fixed">
     <!-- Dropdown menu for navbar -->
     <ul id="menu-dropdown" class="dropdown-content">
-      <li><a href="/?search" class="li-search">Search Recipes</a></li>
-      <li><a href="/?add" class="li-add">Add Recipe</a></li>
-      <li><a href="/?profile" class="li-profile">Manage Profile</a></li>
+      <li><a href="#" class="li-search active">Search Recipes</a></li>
+      <li><a href="/add" class="li-add">Add Recipe</a></li>
+      <li><a href="/profile" class="li-profile">Manage Profile</a></li>
       <li class="divider"></li>
       <li><a href="/logout">Sign Out</a></li>
     </ul>
@@ -35,10 +35,10 @@
             <span class="hide-on-small-only">Imperial</span>
           </label>
           <a class="brand-logo center white-text">Recipe Xchange</a>
-          <a href="/?login" class="right" id="sign-in"><i class="material-icons right">login</i>
+          <a href="/login" class="right" id="sign-in"><i class="material-icons right">login</i>
             <span class="hide-on-small-only">Sign In</span></a>
-          <a class="dropdown-trigger right hide-on-med-and-down" data-target="menu-dropdown" 
-            id="user-name" hidden>Welcome!<i class="material-icons right">arrow_drop_down</i></a>
+          <a class="dropdown-trigger right hide-on-med-and-down" data-target="menu-dropdown" id="user-name"
+            hidden>Welcome!<i class="material-icons right">arrow_drop_down</i></a>
           <a data-target="mobile-demo" class="sidenav-trigger right" id="mobile-menu" hidden>
             <i class="material-icons">menu</i></a>
         </div>
@@ -48,9 +48,9 @@
 
   <!-- Dropdown menu for navbar when mobile -->
   <ul class="sidenav sidenav-close" id="mobile-demo">
-    <li><a href="/?search" class="li-search">Search Recipes</a></li>
-    <li><a href="/?add" class="li-add">Add Recipe</a></li>
-    <li><a href="/?profile" class="li-profile">Manage Profile</a></li>
+    <li><a href="#" class="li-search active">Search Recipes</a></li>
+    <li><a href="/add" class="li-add">Add Recipe</a></li>
+    <li><a href="/profile" class="li-profile">Manage Profile</a></li>
     <li class="divider"></li>
     <li><a href="/logout">Sign Out</a></li>
   </ul>
@@ -58,34 +58,124 @@
   <main class="background">
     <div class="container main-container">
       <div id="main-content">
-        <!-- popup for user to login in with  -->
-        <div class="row" id="loginPopup">
-          <form class="col s12 login-form">
-            <div class="row">
-              <div class="col s12">
-                <h5 class="center">Sign In/Create User Profile</h5>
-              </div>
-            </div>
-            <div class="row">
-              <div class="input-field col s12">
-                <input id="emailLogin" type="email" class="validate" required>
-                <label for="emailLogin">Email</label>
-                <span class="helper-text" data-error="Invalid email format"></span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="input-field col s12">
-                <input id="passwordLogin" type="password" class="validate" required>
-                <label for="passwordLogin">Password</label>
-              </div>
-            </div>
-            <button class="btn waves-effect waves-light teal darken-4" type="submit" id="loginBtn">
-              Sign In/Create User<i class="material-icons left">login</i></button>
-            <button class="btn waves-effect waves-light teal darken-4 right" type="reset" id="cancelBtn">
-              Cancel<i class="material-icons left">clear</i></button>
-          </form>
+        <div class="row">
+          <div class="col s12">
+            <h5 class="center">Search Recipes</h5>
+          </div>
         </div>
-      </div>
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="input-field col s12 m5">
+                <select class="categoriesOptions">
+                  <option value="" disabled selected>Category</option>
+                </select>
+                <label>By Category</label>
+              </div>
+              <div class="input-field col s12 m5">
+                <input placeholder="Keyword" id="keyword" type="text">
+                <label for="keyword">By Title Keyword</label>
+              </div>
+              <div class="col s12 m2">
+                <button id="searchBtn" class="btn waves-effect waves-light teal darken-4 right" type="submit"
+                  name="action">
+                  Search<i class="material-icons left">search</i></button>
+              </div>
+            </div> <!-- search fields row -->
+          </form> <!-- search form -->
+        </div> <!-- search form row -->
+
+        <div class="row">
+          <form class="col s12">
+            <div class="row">
+              <div class="col s2">
+                <a id="prevBtn" class="btn waves-effect waves-light teal darken-4">
+                  <i class="material-icons left">arrow_back_ios</i>Prev</a>
+              </div>
+              <div class="col s8">
+                <h5 class="center"></h5>
+              </div>
+              <div class="col s2">
+                <a id="nextBtn" class="btn waves-effect waves-light teal darken-4 right"><i
+                    class="material-icons right">arrow_forward_ios</i>Next</a>
+              </div>
+            </div> <!-- title/navigation row -->
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea disabled id="recipe-desc" class="materialize-textarea"></textarea>
+                <label id="desc-label" for="recipe-desc">Description</label>
+              </div>
+            </div> <!-- description row -->
+            <div class="row">
+              <div class="input-field col s12 m6">
+                <input disabled id="submitted-by" type="text">
+                <label id="submitted-label" for="submitted-by">Submitted By</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <input disabled id="source" type="text">
+                <label id="source-label" for="source">Source</label>
+              </div>
+            </div> <!-- author/source row -->
+            <div class="row">
+              <div class="input-field col s6 m3">
+                <input disabled id="prep-time" type="text">
+                <label id="prep-label" for="prep-time">Prep Time</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input disabled id="cook-time" type="text">
+                <label id="cook-label" for="cook-time">Cook Time</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input disabled id="oven-temp" type="text">
+                <label id="temp-label" for="oven-temp">Oven Temp</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input disabled id="num-servings" type="text">
+                <label id="servings-label" for="num-servings">Number of Servings</label>
+              </div>
+            </div> <!-- prep row -->
+            <div class="row">
+              <table class="striped responsive-table">
+                <thead>
+                  <tr>
+                    <th>Qty</th>
+                    <th>Unit</th>
+                    <th>Ingredient</th>
+                  </tr>
+                </thead>
+                <tbody id="ingredient-table">
+                </tbody>
+              </table>
+            </div> <!-- ingredient table row -->
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea disabled id="instructions" class="materialize-textarea"></textarea>
+                <label id="instructions-label" for="instructions">Instructions</label>
+              </div>
+            </div> <!-- instructions row -->
+            <div class="row">
+              <!-- Nutrition Information -->
+              <div class="input-field col s6 m3">
+                <input disabled type="text" id="calories">
+                <label id="calories-label" for="calories">Calories Per Serving</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input disabled type="text" id="protein">
+                <label id="protein-label" for="protein">Protein (g)</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input disabled type="text" id="carbohydrates">
+                <label id="carbs-label" for="carbohydrates">Carbohydrates (g)</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input disabled type="text" id="fat">
+                <label id="fat-label" for="fat">Fat (g)</label>
+              </div>
+            </div> <!-- nutrition row -->
+        </div> <!-- nutrition row -->
+        </form> <!-- recipe form -->
+      </div> <!-- recipe form row -->
+    </div>
     </div>
   </main>
 
@@ -103,7 +193,7 @@
   <!-- Compiled and minified JavaScript for Materialize -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <!-- Local javascript -->
-  <script src="/assets/js/script.js"></script>
+  <script src="/assets/js/index.js"></script>
 </body>
 
 </html>

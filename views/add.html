@@ -1,163 +1,248 @@
-<div class="row">
-  <!-- Main recipe properties -->
-  <form class="col s12 recipe-form">
-    <div class="row">
-      <div class="col s2">
-        <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="saveBtn">Save<i
-            class="material-icons left">save_alt</i></button>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Xchange</title>
+
+  <link rel="icon" type="image/png" href="/assets/img/restaurant_menu.png">
+  <!-- Materialize compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Local CSS styling -->
+  <link rel="stylesheet" href="/assets/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div class="navbar-fixed">
+    <!-- Dropdown menu for navbar -->
+    <ul id="menu-dropdown" class="dropdown-content">
+      <li><a href="/" class="li-search">Search Recipes</a></li>
+      <li><a href="/add" class="li-add active">Add Recipe</a></li>
+      <li><a href="/profile" class="li-profile">Manage Profile</a></li>
+      <li class="divider"></li>
+      <li><a href="/logout">Sign Out</a></li>
+    </ul>
+    <nav class="teal darken-4">
+      <div class="nav-wrapper">
+        <div class="switch">
+          <label class="white-text">
+            <span class="hide-on-small-only">Metric</span>
+            <input type="checkbox" checked id="imperial">
+            <span class="lever"></span>
+            <span class="hide-on-small-only">Imperial</span>
+          </label>
+          <a class="brand-logo center white-text">Recipe Xchange</a>
+          <a href="/login" class="right" id="sign-in"><i class="material-icons right">login</i>
+            <span class="hide-on-small-only">Sign In</span></a>
+          <a class="dropdown-trigger right hide-on-med-and-down" data-target="menu-dropdown" id="user-name"
+            hidden>Welcome!<i class="material-icons right">arrow_drop_down</i></a>
+          <a data-target="mobile-demo" class="sidenav-trigger right" id="mobile-menu" hidden>
+            <i class="material-icons">menu</i></a>
+        </div>
       </div>
-      <div class="col s8">
-        <h5 class="center">Add/Update Recipe</h5>
-      </div>
-      <div class="col s2">
-        <button class="btn waves-effect waves-light teal darken-4 right" type="reset" id="resetBtn">Reset<i
-            class="material-icons left">clear</i></button>
+    </nav>
+  </div>
+
+  <!-- Dropdown menu for navbar when mobile -->
+  <ul class="sidenav sidenav-close" id="mobile-demo">
+    <li><a href="/" class="li-search">Search Recipes</a></li>
+    <li><a href="/add" class="li-add active">Add Recipe</a></li>
+    <li><a href="/profile" class="li-profile">Manage Profile</a></li>
+    <li class="divider"></li>
+    <li><a href="/logout">Sign Out</a></li>
+  </ul>
+
+  <main class="background">
+    <div class="container main-container">
+      <div id="main-content">
+        <div class="row">
+          <!-- Main recipe properties -->
+          <form class="col s12 recipe-form">
+            <div class="row">
+              <div class="col s2">
+                <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action"
+                  id="saveBtn">Save<i class="material-icons left">save_alt</i></button>
+              </div>
+              <div class="col s8">
+                <h5 class="center">Add/Update Recipe</h5>
+              </div>
+              <div class="col s2">
+                <button class="btn waves-effect waves-light teal darken-4 right" type="reset" id="resetBtn">Reset<i
+                    class="material-icons left">clear</i></button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s12 m6">
+                <input id="title" type="text" required>
+                <label for="title">Title</label>
+              </div>
+              <div class="input-field col s11 m5">
+                <input id="source" type="text">
+                <label for="source">Source</label>
+              </div>
+              <div class="input-field col s1">
+                <label><input id="public" type="checkbox" class="filled-in"
+                    checked="checked" /><span>Public</span></label>
+              </div>
+            </div> <!-- title/source row -->
+            <div class="row">
+              <div class="input-field col s12 m4">
+                <label for="category1">Category 1</label>
+                <datalist id="category_list">
+                  <select id="categories">
+                    <!-- Options loaded in javascript -->
+                  </select>
+                </datalist>
+                <input type="text" name="category1" class="capitalize" id="category1" list="category_list"></input>
+              </div>
+              <div class="input-field col s12 m4">
+                <label for="category2">Category 2</label>
+                <input type="text" name="category2" class="capitalize" id="category2" list="category_list"></input>
+              </div>
+              <div class="input-field col s12 m4">
+                <label for="category3">Category 3</label>
+                <input type="text" name="category3" class="capitalize" id="category3" list="category_list"></input>
+              </div>
+            </div> <!-- category row -->
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea id="recipe-desc" class="materialize-textarea"></textarea>
+                <label for="recipe-desc">Description</label>
+              </div>
+            </div> <!-- description row -->
+            <div class="row">
+              <div class="input-field col s6 m3">
+                <input id="prep-time" type="text">
+                <label for="prep-time">Prep Time (minutes)</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input id="cook-time" type="text">
+                <label for="cook-time">Cook Time (minutes)</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input id="oven-temp" type="text">
+                <label for="oven-temp" id="temp-label">Oven Temp (°F)</label>
+              </div>
+              <div class="input-field col s6 m3">
+                <input id="num-servings" type="text" required>
+                <label for="num-servings">Number of Servings</label>
+              </div>
+            </div> <!-- prep row -->
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea id="instructions" class="materialize-textarea"></textarea>
+                <label for="instructions">Instructions</label>
+              </div>
+            </div> <!-- instructions row -->
+          </form> <!-- recipe form -->
+        </div> <!-- main recipe properties -->
+
+        <form class="row ingredient-form">
+          <!-- Add/Update Ingredient Form -->
+          <div class="input-field col s6 m2">
+            <input id="quantity" type="text" class="validate" pattern="\d+\s?\.?\d*\/?[1-9]*" required>
+            <label for="quantity">Quantity</label>
+          </div>
+
+          <div class="input-field col s6 m2" id="imperialUnitDiv">
+            <!-- Default to not hidden -->
+            <select id="imperialUnit">
+              <option value="" selected></option>
+              <option value="Oz">Oz</option>
+              <option value="Lb">Lb</option>
+              <option value="Tsp">Tsp</option>
+              <option value="Tbs">Tbs</option>
+              <option value="Cup">Cup</option>
+              <option value="Pt">Pt</option>
+              <option value="Qt">Qt</option>
+              <option value="Gal">Gal</option> -->
+            </select>
+            <label for="imperialUnit">Unit</label>
+          </div>
+          <div class="input-field col s6 m2" id="metricUnitDiv" hidden>
+            <!-- Default to hidden -->
+            <select id="metricUnit">
+              <option value="" selected></option>
+              <option value="mL">mL</option>
+              <option value="L">L</option>
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+            </select>
+            <label for="metricUnit">Unit</label>
+          </div>
+          <div class="input-field col s10 m7">
+            <input id="ingredient" type="text" class="validate" required>
+            <label for="ingredient">Ingredient</label>
+          </div>
+          <div class="col s2 m1">
+            <div class="row">
+              <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action"
+                id="ingredBtn">Save<i class="material-icons left">done</i></button>
+              <!-- <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="ingredBtn"><i -->
+              <!-- class="material-icons left">done</i><span class="hide-on-small-only">Save</span></button> -->
+              </button>
+            </div>
+          </div>
+        </form> <!-- Add/Update ingredient form -->
+
+        <div class="row">
+          <!-- Ingredient table -->
+          <table class="striped responsive-table">
+            <thead>
+              <tr>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Ingredient</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody id="ingredient-body">
+              <!-- Table rows added in javascript -->
+            </tbody>
+          </table>
+        </div> <!-- ingredient table row -->
+
+        <div class="row nutrition-group">
+          <!-- Nutrition Information -->
+          <div class="input-field col s6 m3">
+            <input disabled type="text" id="calories">
+            <label for="calories">Calories Per Serving</label>
+          </div>
+          <div class="input-field col s6 m3">
+            <input disabled type="text" id="protein">
+            <label for="protein">Protein (g)</label>
+          </div>
+          <div class="input-field col s6 m3">
+            <input disabled type="text" id="carbohydrates">
+            <label for="carbohydrates">Carbohydrates (g)</label>
+          </div>
+          <div class="input-field col s6 m3">
+            <input disabled type="text" id="fat">
+            <label for="fat">Fat (g)</label>
+          </div>
+        </div> <!-- nutrition row -->
       </div>
     </div>
-    <div class="row">
-      <div class="input-field col s12 m6">
-        <input id="title" type="text" required>
-        <label for="title">Title</label>
-      </div>
-      <div class="input-field col s11 m5">
-        <input id="source" type="text">
-        <label for="source">Source</label>
-      </div>
-      <div class="input-field col s1">
-        <label><input id="public" type="checkbox" class="filled-in" checked="checked" /><span>Public</span></label>
-      </div>
-    </div> <!-- title/source row -->
-    <div class="row">
-      <div class="input-field col s12 m4">
-        <label for="category1">Category 1</label>
-        <datalist id="category_list">
-          <select id="categories">
-            <!-- Options loaded in javascript -->
-          </select>
-        </datalist>
-        <input type="text" name="category1" class="capitalize" id="category1" list="category_list"></input>
-      </div>
-      <div class="input-field col s12 m4">
-        <label for="category2">Category 2</label>
-        <input type="text" name="category2" class="capitalize" id="category2" list="category_list"></input>
-      </div>
-      <div class="input-field col s12 m4">
-        <label for="category3">Category 3</label>
-        <input type="text" name="category3" class="capitalize" id="category3" list="category_list"></input>
-      </div>
-    </div> <!-- category row -->
-    <div class="row">
-      <div class="input-field col s12">
-        <textarea id="recipe-desc" class="materialize-textarea"></textarea>
-        <label for="recipe-desc">Description</label>
-      </div>
-    </div> <!-- description row -->
-    <div class="row">
-      <div class="input-field col s6 m3">
-        <input id="prep-time" type="text">
-        <label for="prep-time">Prep Time (minutes)</label>
-      </div>
-      <div class="input-field col s6 m3">
-        <input id="cook-time" type="text">
-        <label for="cook-time">Cook Time (minutes)</label>
-      </div>
-      <div class="input-field col s6 m3">
-        <input id="oven-temp" type="text">
-        <label for="oven-temp" id="temp-label">Oven Temp (°F)</label>
-      </div>
-      <div class="input-field col s6 m3">
-        <input id="num-servings" type="text" required>
-        <label for="num-servings">Number of Servings</label>
-      </div>
-    </div> <!-- prep row -->
-    <div class="row">
-      <div class="input-field col s12">
-        <textarea id="instructions" class="materialize-textarea"></textarea>
-        <label for="instructions">Instructions</label>
-      </div>
-    </div> <!-- instructions row -->
-  </form> <!-- recipe form -->
-</div> <!-- main recipe properties -->
+  </main>
 
-<form class="row ingredient-form">
-  <!-- Add/Update Ingredient Form -->
-  <div class="input-field col s6 m2">
-    <input id="quantity" type="text" class="validate" pattern="\d+\s?\.?\d*\/?[1-9]*" required>
-    <label for="quantity">Quantity</label>
-  </div>
-
-  <div class="input-field col s6 m2" id="imperialUnitDiv"> <!-- Default to not hidden -->
-    <select id="imperialUnit">
-      <option value="" selected></option>
-      <option value="Oz">Oz</option>
-      <option value="Lb">Lb</option>
-      <option value="Tsp">Tsp</option>
-      <option value="Tbs">Tbs</option>
-      <option value="Cup">Cup</option>
-      <option value="Pt">Pt</option>
-      <option value="Qt">Qt</option>
-      <option value="Gal">Gal</option> -->
-    </select>
-    <label for="imperialUnit">Unit</label>
-  </div>
-  <div class="input-field col s6 m2" id="metricUnitDiv" hidden> <!-- Default to hidden -->
-    <select id="metricUnit">
-      <option value="" selected></option>
-      <option value="mL">mL</option>
-      <option value="L">L</option>
-      <option value="g">g</option>
-      <option value="kg">kg</option>
-    </select>
-    <label for="metricUnit">Unit</label>
-  </div>
-  <div class="input-field col s10 m7">
-    <input id="ingredient" type="text" class="validate" required>
-    <label for="ingredient">Ingredient</label>
-  </div>
-  <div class="col s2 m1">
-    <div class="row">
-      <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="ingredBtn">Save<i
-          class="material-icons left">done</i></button>
-      <!-- <button class="btn waves-effect waves-light teal darken-4" type="submit" name="action" id="ingredBtn"><i -->
-      <!-- class="material-icons left">done</i><span class="hide-on-small-only">Save</span></button> -->
-      </button>
+  <footer class="page-footer teal darken-4">
+    <div class="footer-copyright white-text">
+      © 2020 Copyright JAK
+      <a class="grey-text right" href="https://spoonacular.com/food-api">Powered by spoonacular API</a>
+      <a class="grey-text right" href="https://www.freepik.com/free-photos-vectors/background">
+        Background photo created by mrsiraphol - www.freepik.com</a>
     </div>
-  </div>
-</form> <!-- Add/Update ingredient form -->
+  </footer>
 
-<div class="row">
-  <!-- Ingredient table -->
-  <table class="striped responsive-table">
-    <thead>
-      <tr>
-        <th>Qty</th>
-        <th>Unit</th>
-        <th>Ingredient</th>
-        <th>Delete</th>
-      </tr>
-    </thead>
-    <tbody id="ingredient-body">
-      <!-- Table rows added in javascript -->
-    </tbody>
-  </table>
-</div> <!-- ingredient table row -->
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <!-- Compiled and minified JavaScript for Materialize -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <!-- Local javascript -->
+  <script src="/assets/js/add.js"></script>
+</body>
 
-<div class="row nutrition-group">
-  <!-- Nutrition Information -->
-  <div class="input-field col s6 m3">
-    <input disabled type="text" id="calories">
-    <label for="calories">Calories Per Serving</label>
-  </div>
-  <div class="input-field col s6 m3">
-    <input disabled type="text" id="protein">
-    <label for="protein">Protein (g)</label>
-  </div>
-  <div class="input-field col s6 m3">
-    <input disabled type="text" id="carbohydrates">
-    <label for="carbohydrates">Carbohydrates (g)</label>
-  </div>
-  <div class="input-field col s6 m3">
-    <input disabled type="text" id="fat">
-    <label for="fat">Fat (g)</label>
-  </div>
-</div> <!-- nutrition row -->
+</html>

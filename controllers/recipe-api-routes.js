@@ -1,11 +1,13 @@
 const db = require("../models");
-const { Op } = require("sequelize")
+const { Op } = require("sequelize");
+let currentRecipe = {};
 
 module.exports = function (app) {
     app.get("/api/recipes", function (req, res) {
         db.Recipes.findAll({
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
+            currentRecipe = {};
             res.json(dbRecipes);
         }).catch(function (err) {
             console.log(err);
@@ -19,6 +21,7 @@ module.exports = function (app) {
                 UserId: req.params.id
             }
         }).then(function (dbRecipes) {
+            currentRecipe = {};
             res.json(dbRecipes);
         }).catch(function (err) {
             console.log(err);
@@ -38,6 +41,7 @@ module.exports = function (app) {
             },
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
+            currentRecipe = {};
             res.json(dbRecipes)
         }).catch(function (err) {
             console.log(err);
@@ -55,6 +59,7 @@ module.exports = function (app) {
             },
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipes) {
+            currentRecipe = {};
             res.json(dbRecipes)
         }).catch(function (err) {
             console.log(err);
@@ -69,11 +74,16 @@ module.exports = function (app) {
             },
             include: [db.Users, db.Ingredients]
         }).then(function (dbRecipe) {
+            currentRecipe = dbRecipe;
             res.json(dbRecipe);
         }).catch(function (err) {
             console.log(err);
             res.status(401).json(err);
         });
+    });
+
+    app.get("/api/currentrecipe", function (req, res) {
+      res.json(currentRecipe);
     });
 
     app.post("/api/addrecipe", function (req, res) {
@@ -93,6 +103,7 @@ module.exports = function (app) {
             public: req.body.public,
             UserId: req.body.UserId
         }).then(function (dbRecipe) {
+            currentRecipe = dbRecipe;
             res.json(dbRecipe)
         }).catch(function (err) {
             console.log(err);
@@ -108,6 +119,7 @@ module.exports = function (app) {
                     id: req.body.id
                 }
             }).then(function (dbRecipe) {
+                currentRecipe = dbRecipe;
                 res.json(dbRecipe);
             }).catch(function (err) {
                 console.log(err);
@@ -121,6 +133,7 @@ module.exports = function (app) {
                 id: req.params.id
             }
         }).then(function (dbRecipe) {
+            currentRecipe = {};
             res.json(dbRecipe);
         }).catch(function (err) {
             console.log(err);
