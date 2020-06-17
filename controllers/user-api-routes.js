@@ -84,7 +84,7 @@ module.exports = function (app) {
                     id: req.body.id
                 }
             }).then(function (dbUser) {
-                currentUser = dbUser;
+                currentUser = req.body;
                 res.json(dbUser);
             }).catch(function (err) {
                 console.log(err);
